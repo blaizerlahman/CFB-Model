@@ -1,4 +1,8 @@
 # CFB Predictive Model
+
+### DISCLAIMER
+All results of backtesting the model and success analysis are based on faulty training data which produced skewed results, and is not to be taken seriously. I plan on updating this info once I have updated the model. Only 2024 season results are legit, as they used mid-season SP+ ratings, not post-season.
+## Overview
 This project is separated into 6 Jupyter notebooks that contain all the necessary procedures to grab and reformat the data needed to build a successful college football predictive model, as well as the model building and analysis process that results in a model that can correctly predict the score differential of every college football game with respect to the Las Vegas spread (prediction) at a 58% success rate. Additionally, the notebooks also contain the necessary functions to run the model during the season and display the historical success rates for each prediction based on their difference from the Vegas spread.
 ## Notebooks
 These notebooks are meant to be followed in order if trying to build the model from scratch. If you are only interested in building the most refined and successful model, follow the data importation and wrangling steps from notebooks 1 and 4 to get the data necessary to run the model and follow notebooks 5 and 6 to be able to run and evaluate the model for yourself during the season.
