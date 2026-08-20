@@ -169,6 +169,44 @@ def _cmd_backtest(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_matchup(args: argparse.Namespace) -> int:
+    import glob as _glob
+    import re as _re
+
+    from cfb_model.config import get_settings
+    from cfb_model.data.store import Store
+    from cfb_model.model.predict import predict_matchup
+    from cfb_model.pipeline import load_models
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+
+    season = args.season
+    if season is None:
+        seasons = [
+            int(m.group(1))
+            for p in _glob.glob(str(settings.models_dir / "*_model_*.pkl"))
+            if (m := _re.search(r"_model_(\d{4})\.pkl$", p))
+        ]
+        season = max(seasons) if seasons else 2024
+    models = load_models(settings, season)
+    if not models:
+        print(f"No models for season {season} — run setup-season first.", file=sys.stderr)
+        return 1
+
+    result = predict_matchup(store, models, args.team1, args.team2, spread=args.spread)
+    line = (f"{result['team']} vs {result['opponent']}: predicted score differential "
+            f"{result['predicted_score_diff']:+g} (from {result['team']}'s perspective)")
+    print(line)
+    if result.get("spread") is not None:
+        verb = {1: "COVER", -1: "NOT COVER", None: "TOSS UP"}.get(result["cover"], "TOSS UP")
+        print(f"Against spread {result['spread']:+g}: {verb} "
+              f"(spreadDiff {result['spread_diff']:+g})")
+        if result.get("success_rate") is not None:
+            print(f"Historical success rate: {result['success_rate'] * 100:.2f}% ({result['tier']})")
+    return 0
+
+
 def _cmd_backfill_sp(args: argparse.Namespace) -> int:
     from cfb_model.api.client import CfbdClient
     from cfb_model.config import get_settings
@@ -240,8 +278,10 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("matchup", help="on-demand prediction for two teams")
     p.add_argument("team1")
     p.add_argument("team2")
-    p.add_argument("--spread", type=float, default=None)
-    p.set_defaults(handler=_not_implemented("Phase 8"))
+    p.add_argument("--spread", type=float, default=None,
+                   help="line from TEAM1's perspective (negative = team1 favored)")
+    p.add_argument("--season", type=int, default=None, help="model season (default: latest available)")
+    p.set_defaults(handler=_cmd_matchup)
 
     return parser
 

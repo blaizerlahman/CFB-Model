@@ -271,6 +271,98 @@ def predict_week(
     return preds, statuses
 
 
+def predict_matchup(
+    store,
+    models: dict,
+    team1: str,
+    team2: str,
+    spread: float | None = None,
+    year: int | None = None,
+    week: int | None = None,
+) -> dict:
+    """On-demand prediction for an arbitrary pairing, from current DB state.
+
+    Uses the production semantics: the alphabetically-earlier team's model
+    owns the game (falling back to the other model if the owner has none).
+    `spread` is from team1's perspective (negative = team1 favored); without
+    it only the predicted score differential is returned. Logged to
+    matchup_queries only — NEVER to the predictions table, and success
+    analyses never see these.
+    """
+    import numpy as np
+
+    from cfb_model.model.classify import lookup_success_rate, tier
+
+    owner, other = sorted([team1, team2])
+    if owner not in models and other in models:
+        owner, other = other, owner
+    if owner not in models:
+        raise ValueError(f"No model for either {team1} or {team2}")
+
+    frames = {}
+    for name in (team1, team2):
+        frame = store.load_team_frame(name)
+        if frame is None:
+            raise ValueError(f"No stored data for {name}")
+        frames[name] = frame[frame["School"].notna()].reset_index(drop=True)
+
+    if year is None:
+        year = int(max(f["Year"].max() for f in frames.values()))
+    sp_weeks = store.sp_weeks(year)
+    sp = store.load_sp(year, sp_weeks[-1]) if sp_weeks else None
+    talent = store.load_talent(year)
+
+    # Synthetic line row: team1 as home. Raw (home-perspective) spread is the
+    # team1-perspective value; the standard build flips it for the home team.
+    from cfb_model.api.mapping import BETTING_COLUMNS
+
+    row = {c: np.nan for c in BETTING_COLUMNS}
+    row.update({
+        "Id": -1.0,
+        "HomeTeam": team1,
+        "AwayTeam": team2,
+        "LineProvider": "matchup",
+        "Spread": -spread if spread is not None and team1 == owner else
+                  (spread if spread is not None else np.nan),
+    })
+    preferred = pd.DataFrame([row], columns=list(BETTING_COLUMNS))
+
+    fbs = {k: v for k, v in frames.items()}
+    fbs, _ = build_upcoming_frames(
+        fbs, {}, preferred, sp if sp is not None else pd.DataFrame(columns=["Team", "Rating"]),
+        talent, year, week if week is not None else 99,
+    )
+
+    features = feature_columns(fbs[owner])
+    preds, _ = predict_week({owner: models[owner]}, fbs, features)
+    if preds.empty:
+        raise RuntimeError("Matchup prediction produced no output")
+    p = preds.iloc[0]
+
+    result = {
+        "team": p["team"],
+        "opponent": p["oppTeam"],
+        "predicted_score_diff": float(p["pred"]),
+        "spread": None if pd.isna(p["spread"]) else float(p["spread"]),
+        "spread_diff": None if pd.isna(p["spreadDiff"]) else float(p["spreadDiff"]),
+        "cover": None if pd.isna(p["cover"]) else int(p["cover"]),
+    }
+    if result["spread_diff"] is not None:
+        bins = store.load_bins()
+        rate = lookup_success_rate(result["spread_diff"], bins)
+        result["success_rate"] = rate
+        result["tier"] = tier(rate) if rate is not None else None
+
+    with store.conn:
+        store.conn.execute(
+            "INSERT INTO matchup_queries (team1, team2, spread, pred, spread_diff, success_rate)"
+            " VALUES (?,?,?,?,?,?)",
+            (team1, team2, spread, result["predicted_score_diff"],
+             result["spread_diff"], result.get("success_rate")),
+        )
+    return result
+
+
 def classification_report(
     preds: pd.DataFrame,
     bins: pd.DataFrame,
