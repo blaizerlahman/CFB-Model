@@ -34,7 +34,7 @@ LEGACY_SKIP = frozenset(
 
 
 def truncate_through_week14(df: pd.DataFrame) -> pd.DataFrame:
-    keep = ~((df["Year"] == YEAR) & (df["Week"] >= WEEK))
+    keep = (df["Year"] < YEAR) | ((df["Year"] == YEAR) & (df["Week"] < WEEK))
     return df[keep].reset_index(drop=True)
 
 

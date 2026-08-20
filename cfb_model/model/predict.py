@@ -22,18 +22,13 @@ def select_preferred_lines(lines: pd.DataFrame,
     """One row per game Id: first provider in preference order, else the
     first available line (exact getPreferredLine semantics)."""
 
-    def preferred(group: pd.DataFrame) -> pd.Series:
-        for provider in providers:
-            hit = group[group["LineProvider"] == provider]
-            if not hit.empty:
-                return hit.iloc[0]
-        return group.iloc[0]
-
-    return (
-        lines.groupby("Id", group_keys=False)
-        .apply(preferred)
-        .reset_index(drop=True)
-    )
+    rank = {p: i for i, p in enumerate(providers)}
+    ranked = lines.copy()
+    ranked["_rank"] = ranked["LineProvider"].map(rank).fillna(len(providers))
+    ranked["_pos"] = range(len(ranked))
+    ranked = ranked.sort_values(["Id", "_rank", "_pos"], kind="stable")
+    preferred = ranked.drop_duplicates(subset=["Id"], keep="first")
+    return preferred.drop(columns=["_rank", "_pos"]).reset_index(drop=True)
 
 
 def build_upcoming_frames(

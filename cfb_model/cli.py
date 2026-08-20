@@ -88,6 +88,64 @@ def _cmd_update(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_analyze(args: argparse.Namespace) -> int:
+    from cfb_model.analysis.evaluate import (
+        big_spread_report,
+        day_breakdown,
+        grade_week,
+        since_week_report,
+        tier_breakdown,
+    )
+    from cfb_model.config import get_settings
+    from cfb_model.data.store import Store
+    from cfb_model.export import results_csv_path, write_results_csv
+    from cfb_model.pipeline import load_gated_frames
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+
+    year = args.year
+    if year is None:
+        row = store.conn.execute("SELECT MAX(season) FROM predictions").fetchone()
+        if not row or row[0] is None:
+            print("No predictions stored yet.")
+            return 1
+        year = int(row[0])
+
+    if args.week is not None:
+        preds = store.load_predictions(year, args.week)
+        if preds.empty:
+            print(f"No stored predictions for {year} week {args.week}.")
+            return 1
+        fbs, fcs = load_gated_frames(store)
+        results = grade_week(preds, store.load_bins(), fbs, set(fcs))
+        if results.empty:
+            print("No gradable games (are the week's results ingested?).")
+            return 1
+        print(f"=== {year} week {args.week} ===")
+        print(tier_breakdown(results))
+        print()
+        print(day_breakdown(results))
+        store.upsert_results(year, args.week, results)
+        out = write_results_csv(results, results_csv_path(settings.output_root, year, args.week))
+        print(f"\nSaved -> {out}")
+        return 0
+
+    results = store.load_results(year)
+    if results.empty:
+        print(f"No stored results for {year} — grade weeks first (analyze --week N).")
+        return 1
+    print(f"=== {year} season ({results['week'].nunique()} weeks, {len(results)} games) ===")
+    print(tier_breakdown(results))
+    print()
+    print(day_breakdown(results))
+    print()
+    print(since_week_report(results))
+    print()
+    print(big_spread_report(results))
+    return 0
+
+
 def _cmd_backfill_sp(args: argparse.Namespace) -> int:
     from cfb_model.api.client import CfbdClient
     from cfb_model.config import get_settings
@@ -137,7 +195,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("analyze", help="success analysis: week grading or season roll-up")
     p.add_argument("--year", type=int, default=None)
     p.add_argument("--week", type=int, default=None)
-    p.set_defaults(handler=_not_implemented("Phase 6"))
+    p.set_defaults(handler=_cmd_analyze)
 
     p = sub.add_parser("setup-season", help="backfill missing data via API and retrain team models")
     p.add_argument("--year", type=int, required=True)
@@ -174,7 +232,7 @@ def main(argv: list[str] | None = None) -> int:
             args.command = "analyze"
             args.year = None
             args.week = None
-            args.handler = _not_implemented("Phase 6")
+            args.handler = _cmd_analyze
         else:
             parser.print_help()
             return 0
