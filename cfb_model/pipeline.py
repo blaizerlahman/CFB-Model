@@ -88,9 +88,7 @@ def ingest_week(store: Store, client: CfbdClient, year: int, week: int,
 
     talent_table = store.load_talent(year)
     if week == 1 and talent_table.empty:
-        talent_table = mapping.talent_to_frame(client.talent(year))
-        if not talent_table.empty:
-            store.upsert_talent(year, talent_table)
+        talent_table = resolve_talent(store, client, year)
 
     fbs = store.load_all_team_frames("fbs")
     fcs = store.load_all_team_frames("fcs")
@@ -184,6 +182,44 @@ def ingest_week(store: Store, client: CfbdClient, year: int, week: int,
             "api_calls": client.calls_made}
 
 
+def resolve_talent(store: Store, client: CfbdClient, year: int, log=print) -> pd.DataFrame:
+    """Talent ratings for `year`, falling back to the most recent published
+    season when CFBD has not released the current one yet.
+
+    Without the fallback, missing talent becomes NaN on the upcoming-game row
+    and the pipeline's constant imputer turns it into 0 — far outside the
+    trained range (~400-1050), which would distort every prediction. Talent
+    composites move slowly year to year, so carrying the prior season forward
+    is far closer to the truth than zero.
+    """
+    talent = store.load_talent(year)
+    if not talent.empty:
+        return talent
+
+    talent = mapping.talent_to_frame(client.talent(year))
+    if not talent.empty:
+        store.upsert_talent(year, talent)
+        return talent
+
+    row = store.conn.execute(
+        "SELECT MAX(season) FROM talent WHERE season < ?", (year,)
+    ).fetchone()
+    fallback_year = row[0] if row else None
+    if fallback_year is None:
+        for candidate in range(year - 1, year - 4, -1):
+            candidate_talent = mapping.talent_to_frame(client.talent(candidate))
+            if not candidate_talent.empty:
+                store.upsert_talent(candidate, candidate_talent)
+                fallback_year = candidate
+                break
+    if fallback_year is None:
+        log(f"WARNING: no talent ratings available for {year} or any prior season.")
+        return pd.DataFrame(columns=["School", "Talent"])
+
+    log(f"WARNING: CFBD has no {year} talent ratings yet — using {fallback_year} values.")
+    return store.load_talent(int(fallback_year))
+
+
 def latest_ingested_week(store: Store, year: int) -> int | None:
     row = store.conn.execute(
         'SELECT MAX("Week") FROM team_games WHERE "Year" = ?', (year,)
@@ -269,11 +305,7 @@ def predict_run(store: Store, client: CfbdClient, year: int | None = None,
 
     sp = mapping.sp_to_frame(client.sp_ratings(year))
     store.upsert_sp(year, week, sp)
-    talent = store.load_talent(year)
-    if talent.empty:
-        talent = mapping.talent_to_frame(client.talent(year))
-        if not talent.empty:
-            store.upsert_talent(year, talent)
+    talent = resolve_talent(store, client, year, log)
 
     fbs, fcs = load_gated_frames(store)
     fbs, fcs = build_upcoming_frames(fbs, fcs, preferred, sp, talent, year, week)
