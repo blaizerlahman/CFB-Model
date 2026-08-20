@@ -159,25 +159,34 @@ def parse_sp_table(html: str) -> pd.DataFrame:
     return df.drop_duplicates(subset=["Team"], keep="first")
 
 
-def snapshot_deadlines(calendar_records: list[dict]) -> dict[int, datetime]:
-    """week -> the instant its first game kicks off.
+def snapshot_deadlines(game_records: list[dict]) -> dict[int, datetime]:
+    """week -> the instant that week's genuinely first game kicks off.
 
-    A rating may be used to predict week N only if it was publicly visible
-    before week N's FIRST kickoff; anything later can already encode results
-    from that same week. Keying on `firstGameStart` makes the choice provably
-    free of lookahead, which matters because the whole point of the weekly
-    backfill is to avoid contaminating the backtest with future information.
+    A rating may be used to predict week N only if it was public before any
+    week-N game started; anything later can already encode results from the
+    week being predicted.
+
+    This is deliberately computed from actual game start times rather than the
+    calendar's `firstGameStart`, which is a window boundary sitting ~1-2 days
+    before the real opener (2024 week 2: boundary Sep 3 07:00Z, first kickoff
+    Sep 4 23:00Z). Using the boundary rejects the Tuesday rating update that a
+    real bettor would have had all week, leaving snapshots a full publication
+    cycle stale.
     """
-    regular = [e for e in calendar_records if e.get("seasonType") == "regular"]
-    regular.sort(key=lambda e: e["week"])
-    deadlines: dict[int, datetime] = {}
-    for entry in regular:
-        stamp = entry.get("firstGameStart") or entry.get("startDate")
-        deadlines[entry["week"]] = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
-    return deadlines
+    earliest: dict[int, datetime] = {}
+    for game in game_records:
+        if game.get("seasonType") != "regular" or not game.get("startDate"):
+            continue
+        week = game.get("week")
+        if week is None:
+            continue
+        start = datetime.fromisoformat(game["startDate"].replace("Z", "+00:00"))
+        if week not in earliest or start < earliest[week]:
+            earliest[week] = start
+    return earliest
 
 
-def backfill_sp(store: Store, year: int, calendar_records: list[dict],
+def backfill_sp(store: Store, year: int, game_records: list[dict],
                 settings: Settings | None = None, log=print) -> dict[int, str]:
     """Fill sp_ratings(year, week) for every regular-season week from Wayback
     captures. Returns {week: capture_timestamp}. Raises if any week has no
@@ -193,7 +202,7 @@ def backfill_sp(store: Store, year: int, calendar_records: list[dict],
         raise RuntimeError(f"No Wayback captures found for the {year} SP+ article")
     log(f"{len(captures)} Wayback captures of the {year} SP+ article")
 
-    deadlines = snapshot_deadlines(calendar_records)
+    deadlines = snapshot_deadlines(game_records)
     chosen: dict[int, str] = {}
     missing: list[int] = []
 
@@ -201,7 +210,7 @@ def backfill_sp(store: Store, year: int, calendar_records: list[dict],
         # Freshest ratings that were public BEFORE this week's first kickoff.
         eligible = [
             ts for ts in captures
-            if datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc) <= deadline
+            if datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc) < deadline
         ]
         if not eligible:
             missing.append(week)

@@ -223,7 +223,8 @@ def _cmd_backfill_sp(args: argparse.Namespace) -> int:
     settings = get_settings()
     store = Store(settings.db_path)
     client = CfbdClient(settings)
-    chosen = backfill_sp(store, args.year, client.calendar(args.year), settings)
+    # Deadlines come from real kickoff times, not the calendar's week boundary.
+    chosen = backfill_sp(store, args.year, client.games(args.year), settings)
     print(f"Backfilled SP+ for {args.year}: weeks {sorted(chosen)}")
     return 0
 

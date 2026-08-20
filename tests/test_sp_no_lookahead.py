@@ -16,24 +16,26 @@ from cfb_model.data.store import Store
 
 SETTINGS = get_settings()
 
-CALENDAR = [
-    {"week": 1, "seasonType": "regular",
-     "firstGameStart": "2025-08-23T07:00:00.000Z", "lastGameStart": "2025-09-02T07:59:00.000Z"},
-    {"week": 2, "seasonType": "regular",
-     "firstGameStart": "2025-09-02T07:00:00.000Z", "lastGameStart": "2025-09-09T07:59:00.000Z"},
-    {"week": 3, "seasonType": "regular",
-     "firstGameStart": "2025-09-08T07:00:00.000Z", "lastGameStart": "2025-09-16T07:59:00.000Z"},
-    {"week": 1, "seasonType": "postseason",
-     "firstGameStart": "2025-12-20T07:00:00.000Z", "lastGameStart": "2026-01-20T07:59:00.000Z"},
+GAMES = [
+    # Week 2's real opener is Thursday, days after the calendar's Tuesday
+    # window boundary — the deadline must track the game, not the boundary.
+    {"week": 2, "seasonType": "regular", "startDate": "2025-09-04T22:00:00.000Z"},
+    {"week": 2, "seasonType": "regular", "startDate": "2025-09-06T16:00:00.000Z"},
+    {"week": 2, "seasonType": "regular", "startDate": "2025-09-06T20:00:00.000Z"},
+    {"week": 3, "seasonType": "regular", "startDate": "2025-09-11T22:30:00.000Z"},
+    {"week": 3, "seasonType": "regular", "startDate": "2025-09-13T16:00:00.000Z"},
+    # Postseason reuses week numbers and must not displace regular-season ones.
+    {"week": 2, "seasonType": "postseason", "startDate": "2025-12-28T18:00:00.000Z"},
+    {"week": 3, "seasonType": "regular", "startDate": None},
 ]
 
 
-def test_deadline_is_first_kickoff_not_last():
-    deadlines = snapshot_deadlines(CALENDAR)
-    assert deadlines[1] == datetime(2025, 8, 23, 7, 0, tzinfo=timezone.utc)
-    assert deadlines[2] == datetime(2025, 9, 2, 7, 0, tzinfo=timezone.utc)
-    # Postseason entries share week numbers and must not overwrite regular ones.
-    assert deadlines[1].month == 8
+def test_deadline_is_the_weeks_earliest_actual_kickoff():
+    deadlines = snapshot_deadlines(GAMES)
+    assert deadlines[2] == datetime(2025, 9, 4, 22, 0, tzinfo=timezone.utc)
+    assert deadlines[3] == datetime(2025, 9, 11, 22, 30, tzinfo=timezone.utc)
+    # Postseason games must not pull a regular-season deadline later.
+    assert deadlines[2].month == 9
 
 
 def test_stored_2025_snapshots_predate_their_week():
