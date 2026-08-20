@@ -174,7 +174,45 @@ def build_upcoming_frames(
 
             fbs[team] = df
 
+    if week == 1:
+        _seed_week_one(fbs, fcs, sp, talent, year)
+
     return fbs, fcs
+
+
+def _seed_week_one(fbs: dict[str, pd.DataFrame], fcs: dict[str, pd.DataFrame],
+                   sp: pd.DataFrame, talent: pd.DataFrame, year: int) -> None:
+    """grabUpcomingYearTalent + grabUpcomingYearSP, sentinel rows only:
+    the new season's talent/SP (and the opponents') come straight from the
+    ratings tables rather than from prior rows."""
+    for frames in (fbs, fcs):
+        for team in list(frames):
+            df = frames[team]
+            if pd.isna(df.iloc[-1]["School"]) == False:  # noqa: E712
+                continue
+            df = df.copy()
+            last_index = df.index[-1]
+            df.loc[last_index, "Year"] = year
+
+            team_talent = talent.loc[talent["School"] == team, "Talent"]
+            if len(team_talent.values):
+                df.loc[last_index, "talent"] = team_talent.values[0]
+
+            if frames is fbs:
+                team_sp = sp.loc[sp["Team"] == team, "Rating"]
+                if len(team_sp.values):
+                    df.loc[last_index, "SP"] = team_sp.values[0]
+
+                last_row = df.iloc[-1]
+                opp_name = last_row["AwayTeam"] if team == last_row["HomeTeam"] else last_row["HomeTeam"]
+                opp_talent = talent[talent["School"] == opp_name]
+                if not opp_talent.empty:
+                    df.loc[last_index, "talent_opp"] = opp_talent.iloc[0]["Talent"]
+                opp_sp = sp[sp["Team"] == opp_name]
+                if not opp_sp.empty:
+                    df.loc[last_index, "SP_opp"] = opp_sp.iloc[0]["Rating"]
+
+            frames[team] = df
 
 
 def predict_week(
