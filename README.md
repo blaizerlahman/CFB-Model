@@ -114,8 +114,14 @@ number does not survive a clean test, and neither do the tier success rates abov
 |---|---|---|
 | 2024 (actually played, weekly ratings) | live weekly runs | 325–348, **48.3%** |
 | 2024 | replay | 324–327, **49.8%** |
-| 2025 | replay, true pre-kickoff weekly SP+ | 318–304, **51.1%** |
+| 2025 | replay, true pre-kickoff weekly SP+ | 315–308, **50.6%** |
 | 2025 | replay, SP+ leaked from the same week | 371–295, 55.7% |
+
+Where the ratings come from matters, so it is worth stating plainly. The 2024 replay uses the
+weekly SP+ files captured during that season, each downloaded mid-week before the games it was
+used to predict. The 2025 replay reconstructs the equivalent from archived snapshots, each one
+verified to predate its week's first kickoff; 2025 week 1 has no such snapshot and is excluded
+rather than filled in. Both seasons therefore use contemporaneous weekly ratings.
 
 At standard −110 odds a bettor needs **52.4%** just to break even. Measured honestly, this model
 is at or below that line.
@@ -124,9 +130,11 @@ Two compounding sources of leakage explain the gap between the old claim and rea
 
 1. **Season-final SP+ in historical training data.** The API serves one SP+ rating per season, so
    every historical game carries its season's *final* rating — information that did not exist when
-   that game was played. The 2018–2023 backtests behind the 57–58% figure were built this way, as
-   was the bin table that assigns each pick its advertised success rate. The original README's own
-   disclaimer flagged this and noted only 2024 was trustworthy; the clean results above confirm it.
+   that game was played. Measured directly: every season from 2013 to 2023 carries exactly one
+   distinct SP+ value per team, while 2024 and 2025 carry about ten. The 2018–2023 backtests behind
+   the 57–58% figure were built this way, as was the bin table that assigns each pick its
+   advertised success rate. The original README's own disclaimer flagged this and noted only 2024
+   was trustworthy; the clean results above confirm it.
 2. **Same-week ratings in the 2025 reconstruction.** The first version of the SP+ backfill picked
    an archived snapshot from late in each week, after that week's games. Fixing it to use only
    snapshots published before the week's first kickoff dropped the 2025 result from 55.7% to 51.1%
