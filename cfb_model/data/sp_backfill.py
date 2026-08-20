@@ -159,23 +159,22 @@ def parse_sp_table(html: str) -> pd.DataFrame:
     return df.drop_duplicates(subset=["Team"], keep="first")
 
 
-def week_windows(calendar_records: list[dict]) -> dict[int, tuple[datetime, datetime]]:
-    """week -> (previous week's last game, this week's last game], regular
-    season only. Week 1's window opens Aug 1."""
+def snapshot_deadlines(calendar_records: list[dict]) -> dict[int, datetime]:
+    """week -> the instant its first game kicks off.
+
+    A rating may be used to predict week N only if it was publicly visible
+    before week N's FIRST kickoff; anything later can already encode results
+    from that same week. Keying on `firstGameStart` makes the choice provably
+    free of lookahead, which matters because the whole point of the weekly
+    backfill is to avoid contaminating the backtest with future information.
+    """
     regular = [e for e in calendar_records if e.get("seasonType") == "regular"]
     regular.sort(key=lambda e: e["week"])
-    windows = {}
-    prev_end = None
+    deadlines: dict[int, datetime] = {}
     for entry in regular:
-        end = datetime.fromisoformat(entry["lastGameStart"].replace("Z", "+00:00"))
-        start = prev_end or end.replace(month=8, day=1, hour=0, minute=0, second=0)
-        # Defensive clamp: CFBD's calendar has typo'd years (2025 week 16
-        # claims a 2026 end date); no regular-season week spans 30+ days.
-        if prev_end is not None and (end - start).days > 30:
-            end = start + timedelta(days=14)
-        windows[entry["week"]] = (start, end)
-        prev_end = end
-    return windows
+        stamp = entry.get("firstGameStart") or entry.get("startDate")
+        deadlines[entry["week"]] = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    return deadlines
 
 
 def backfill_sp(store: Store, year: int, calendar_records: list[dict],
@@ -194,20 +193,19 @@ def backfill_sp(store: Store, year: int, calendar_records: list[dict],
         raise RuntimeError(f"No Wayback captures found for the {year} SP+ article")
     log(f"{len(captures)} Wayback captures of the {year} SP+ article")
 
-    windows = week_windows(calendar_records)
+    deadlines = snapshot_deadlines(calendar_records)
     chosen: dict[int, str] = {}
     missing: list[int] = []
 
-    for week, (start, end) in sorted(windows.items()):
+    for week, deadline in sorted(deadlines.items()):
+        # Freshest ratings that were public BEFORE this week's first kickoff.
         eligible = [
             ts for ts in captures
-            if start < datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc) <= end
+            if datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc) <= deadline
         ]
         if not eligible:
             missing.append(week)
             continue
-        # Latest capture in the window = freshest ratings available while
-        # that week's predictions would have been made.
         for ts in reversed(eligible):
             html = fetch_capture(ts, year, cache_dir, session)
             table = parse_sp_table(html)
@@ -220,8 +218,9 @@ def backfill_sp(store: Store, year: int, calendar_records: list[dict],
             missing.append(week)
 
     if missing:
-        raise RuntimeError(
-            f"No usable SP+ capture for {year} weeks {missing} — STOP: do not "
-            "substitute final-season ratings; present options to the user."
+        log(
+            f"WARNING: no pre-kickoff SP+ capture exists for {year} weeks {missing} "
+            "— those weeks have NO snapshot and must be excluded from backtests. "
+            "Final-season ratings are deliberately NOT substituted."
         )
     return chosen

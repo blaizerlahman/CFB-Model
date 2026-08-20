@@ -83,8 +83,14 @@ def run_backtest(store: Store, year: int, random_state: int = 50,
         preferred = preferred_lines_for(store, fbs_full, year, week)
         if preferred.empty:
             continue
-        sp_weeks = [w for w in store.sp_weeks(year) if w <= week] or store.sp_weeks(year)[:1]
-        sp = store.load_sp(year, sp_weeks[-1]) if sp_weeks else pd.DataFrame(columns=["Team", "Rating"])
+        # Strictly the snapshot captured before this week's first kickoff.
+        # Substituting a later week's ratings (or the season-final ones) would
+        # leak results of the very games being predicted, so a week without
+        # its own snapshot is skipped outright.
+        sp = store.load_sp(year, week)
+        if sp.empty:
+            log(f"  week {week:>2}: SKIPPED — no pre-kickoff SP+ snapshot for this week")
+            continue
         talent = store.load_talent(year)
 
         fbs = {k: truncate_before(v, year, week) for k, v in fbs_full.items()}
