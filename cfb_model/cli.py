@@ -146,6 +146,29 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     return 0
 
 
+@_locked
+def _cmd_setup_season(args: argparse.Namespace) -> int:
+    from cfb_model.api.client import CfbdClient
+    from cfb_model.config import get_settings
+    from cfb_model.data.store import Store
+    from cfb_model.model.train import setup_season
+
+    settings = get_settings()
+    setup_season(Store(settings.db_path), CfbdClient(settings), args.year, settings)
+    return 0
+
+
+@_locked
+def _cmd_backtest(args: argparse.Namespace) -> int:
+    from cfb_model.analysis.backtest import run_backtest
+    from cfb_model.config import get_settings
+    from cfb_model.data.store import Store
+
+    settings = get_settings()
+    run_backtest(Store(settings.db_path), args.year, args.seed, settings)
+    return 0
+
+
 def _cmd_backfill_sp(args: argparse.Namespace) -> int:
     from cfb_model.api.client import CfbdClient
     from cfb_model.config import get_settings
@@ -199,12 +222,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("setup-season", help="backfill missing data via API and retrain team models")
     p.add_argument("--year", type=int, required=True)
-    p.set_defaults(handler=_not_implemented("Phase 7"))
+    p.set_defaults(handler=_cmd_setup_season)
 
     p = sub.add_parser("backtest", help="replay a past season with as-of models")
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--seed", type=int, default=50)
-    p.set_defaults(handler=_not_implemented("Phase 7.5"))
+    p.set_defaults(handler=_cmd_backtest)
 
     p = sub.add_parser("backfill-sp", help="fill weekly SP+ snapshots for a past season from Wayback captures")
     p.add_argument("--year", type=int, required=True)

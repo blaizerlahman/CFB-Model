@@ -37,6 +37,18 @@ def test_week_row_matches_stored_game_row(week_rows):
     assert bool(row["Win"]) == bool(stored["Win"])
 
 
+def test_cross_classification_duplicates_collapse():
+    """A game present in both the fbs and fcs pulls must yield exactly one
+    row per (game, team) and one temp row per team (regression: duplicated
+    rows corrupted rolling windows and broke the talent carry chain)."""
+    records = json.loads((FIXTURES / "games_teams_2024w10_sample.json").read_text())
+    doubled = records + records  # simulate fbs + fcs overlap
+    wide = team_stats_to_wide(doubled, year=2024, week=10)
+    assert not wide.duplicated(subset=["Game Id", "School"]).any()
+    temp = build_week_rows(wide)
+    assert all(len(df) == 1 for df in temp.values())
+
+
 def test_week_rows_cover_both_sides(week_rows):
     assert "Georgia" in week_rows and "Florida" in week_rows
     g = week_rows["Georgia"].iloc[0]

@@ -85,9 +85,31 @@ def team_stats_to_wide(records: list[dict], year: int, week: int) -> pd.DataFram
         return pd.DataFrame(columns=list(GAME_TEAM_ID_COLUMNS))
 
     df = pd.DataFrame(rows)
+    # Cross-classification games appear in BOTH the fbs and fcs pulls; keep
+    # one row per (game, team) or downstream self-merges explode into
+    # duplicate rows that corrupt rolling windows.
+    df = df.drop_duplicates(subset=["Game Id", "School"], keep="first")
     # Stable column order: identity columns first, stat categories sorted.
     stat_cols = sorted(c for c in df.columns if c not in GAME_TEAM_ID_COLUMNS)
-    return df[list(GAME_TEAM_ID_COLUMNS) + stat_cols]
+    return df[list(GAME_TEAM_ID_COLUMNS) + stat_cols].reset_index(drop=True)
+
+
+def team_stats_to_wide_multi(records: list[dict], year: int,
+                             week_by_game: dict) -> pd.DataFrame:
+    """Like team_stats_to_wide for a whole-season /games/teams response:
+    weeks come from a {game id: week} map (built from /games)."""
+    frames = []
+    by_week: dict[int, list[dict]] = {}
+    for game in records:
+        week = week_by_game.get(game["id"])
+        if week is None:
+            continue
+        by_week.setdefault(week, []).append(game)
+    for week, games in sorted(by_week.items()):
+        frames.append(team_stats_to_wide(games, year=year, week=week))
+    if not frames:
+        return pd.DataFrame(columns=list(GAME_TEAM_ID_COLUMNS))
+    return pd.concat(frames, ignore_index=True)
 
 
 def lines_to_frame(records: list[dict]) -> pd.DataFrame:
