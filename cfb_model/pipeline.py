@@ -29,6 +29,11 @@ from cfb_model.model.predict import (
 
 logger = logging.getLogger(__name__)
 
+# Most finished weeks `predict` will silently backfill before giving up. Keeps
+# a mistyped --week (or a long-idle database) from spending the monthly API
+# budget three calls at a time.
+MAX_CATCHUP_WEEKS = 6
+
 # The 13 betting columns written onto a completed game row (legacy: the
 # frame's last 13 columns; fixed list here).
 BETTING_WRITE_COLUMNS = [
@@ -285,15 +290,26 @@ def predict_run(store: Store, client: CfbdClient, year: int | None = None,
         week = week if week is not None else detected[1]
     day = day or datetime.now().strftime("%a").lower()[:3]
 
-    # Ingest the previous week if its games are missing from the DB.
+    # Ingest any finished weeks still missing from the DB. Bounded on both
+    # ends: a bad --week must never fan out into dozens of API calls, and the
+    # loop stops as soon as a week comes back empty (past the season's end).
     if week > 1:
         latest = latest_ingested_week(store, year)
         if latest is None or latest < week - 1:
             target = (latest or 0) + 1
-            for w in range(target, week):
+            pending = list(range(target, week))
+            if len(pending) > MAX_CATCHUP_WEEKS:
+                log(f"Refusing to auto-ingest {len(pending)} weeks "
+                    f"({target}-{week - 1}); run `update --year {year} --week N` "
+                    "explicitly to backfill that far.")
+                pending = []
+            for w in pending:
                 log(f"Ingesting missing week {year} w{w}...")
                 summary = ingest_week(store, client, year, w, settings)
                 log(f"  updated {summary['teams_updated']} teams")
+                if summary["teams_updated"] == 0:
+                    log(f"  no games for {year} w{w} — stopping catch-up here.")
+                    break
 
     line_records = client.lines(year, week=week)
     lines = mapping.lines_to_frame(line_records)

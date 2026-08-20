@@ -81,9 +81,16 @@ def _cmd_update(args: argparse.Namespace) -> int:
         print("No completed week to ingest yet.")
         return 0
     latest = latest_ingested_week(store, year) or 0
+    empty_streak = 0
     for w in range(min(latest + 1, week), week + 1):
         summary = ingest_week(store, client, year, w, settings)
         print(f"{year} week {w}: updated {summary['teams_updated']} teams")
+        # Past the end of a season every further week costs 3 API calls and
+        # returns nothing; give up after two in a row.
+        empty_streak = empty_streak + 1 if summary["teams_updated"] == 0 else 0
+        if empty_streak >= 2:
+            print(f"No games for {year} weeks {w - 1}-{w}; stopping.")
+            break
     print(f"API calls: {client.calls_made}")
     return 0
 

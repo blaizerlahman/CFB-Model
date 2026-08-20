@@ -101,12 +101,46 @@ spread — the spread differential — is looked up in a table of historical suc
 replaying the 2018–2023 seasons ten times over and binning outcomes by that gap. Picks are then
 reported in tiers: above 70%, 65–70%, 60–65%, and below 60%.
 
-Vegas spreads are designed to be coin flips, and professional bettors land near 55%, so the
-model's observed 57–58% against the spread is a meaningful edge.
-
 <img width="758" alt="Historical success rate by spread differential bin" src="https://github.com/user-attachments/assets/7a84a575-0d5f-4d5c-bbc4-a239c739f369">
 
 The red, yellow, and green dashed lines represent 50, 60, and 70 percent success rates.
+
+## Measured performance — read this before betting anything
+
+Earlier versions of this project advertised a 57–58% success rate against the spread. **That
+number does not survive a clean test, and neither do the tier success rates above.**
+
+| Season | Setup | Result |
+|---|---|---|
+| 2024 (actually played, weekly ratings) | live weekly runs | 325–348, **48.3%** |
+| 2024 | replay | 324–327, **49.8%** |
+| 2025 | replay, true pre-kickoff weekly SP+ | 318–304, **51.1%** |
+| 2025 | replay, SP+ leaked from the same week | 371–295, 55.7% |
+
+At standard −110 odds a bettor needs **52.4%** just to break even. Measured honestly, this model
+is at or below that line.
+
+Two compounding sources of leakage explain the gap between the old claim and reality:
+
+1. **Season-final SP+ in historical training data.** The API serves one SP+ rating per season, so
+   every historical game carries its season's *final* rating — information that did not exist when
+   that game was played. The 2018–2023 backtests behind the 57–58% figure were built this way, as
+   was the bin table that assigns each pick its advertised success rate. The original README's own
+   disclaimer flagged this and noted only 2024 was trustworthy; the clean results above confirm it.
+2. **Same-week ratings in the 2025 reconstruction.** The first version of the SP+ backfill picked
+   an archived snapshot from late in each week, after that week's games. Fixing it to use only
+   snapshots published before the week's first kickoff dropped the 2025 result from 55.7% to 51.1%
+   — and the "great bet" tier from 63.9% to 50.5%.
+
+That second row is the useful lesson: the confidence tiers showed a large edge only while future
+information was leaking in. On clean data they are indistinguishable from coin flips, because the
+bins were themselves calibrated on leaked backtests.
+
+The pipeline is verified faithful to the original model — a replay of week 15 of 2024 reproduces
+the saved predictions exactly, and regrading 2024 reproduces all 687 stored results. So these
+numbers reflect the model, not the refactor. Rebuilding the bins on leak-free data, and training
+on contemporaneous rather than season-final SP+, are the obvious next steps for anyone who wants
+this to have a real edge.
 
 ### Which teams get predicted
 
@@ -123,9 +157,14 @@ week-1 predictions and inflates results. (The original notebooks hit exactly thi
 2024 was trustworthy because its weekly ratings had been captured by hand at the time.)
 
 `backfill-sp` solves it by reading archived snapshots of ESPN's living SP+ article from the
-Wayback Machine, picking for each week the latest capture taken before that week's games, and
-parsing the full 136-team table. The 2025 season has been backfilled this way with complete
-coverage, so 2025 backtests use genuinely contemporaneous ratings.
+Wayback Machine and parsing the full 136-team table. For each week it takes the freshest capture
+published **before that week's first kickoff**, so a rating can never encode the result of a game
+it is used to predict. A week with no qualifying capture gets no snapshot at all and is skipped by
+the backtest rather than filled with later ratings — 2025 week 1 is such a week, because the
+article was first archived after that week began.
+
+This boundary matters more than it sounds: choosing snapshots from later in each week instead
+inflated the 2025 backtest from 51.1% to 55.7%.
 
 ## Storage
 
