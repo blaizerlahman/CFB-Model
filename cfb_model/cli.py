@@ -18,6 +18,14 @@ def _not_implemented(phase: str):
     return handler
 
 
+def _cmd_migrate(args: argparse.Namespace) -> int:
+    from cfb_model.data.migrate import run_migration, validate_migration
+
+    if not args.validate_only:
+        run_migration()
+    return 0 if validate_migration() else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="cfb_model",
@@ -58,7 +66,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("migrate", help="one-time legacy CSV -> SQLite migration")
     p.add_argument("--validate-only", action="store_true")
-    p.set_defaults(handler=_not_implemented("Phase 3"))
+    p.set_defaults(handler=_cmd_migrate)
 
     p = sub.add_parser("matchup", help="on-demand prediction for two teams")
     p.add_argument("team1")
