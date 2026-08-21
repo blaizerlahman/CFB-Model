@@ -174,6 +174,23 @@ article was first archived after that week began.
 This boundary matters more than it sounds: choosing snapshots from later in each week instead
 inflated the 2025 backtest from 51.1% to 55.7%.
 
+**Capture ratings as the season runs.** CFBD serves SP+ live during a season and freezes it only
+afterwards, so a season's weekly values exist later only if something recorded them at the time.
+`snapshot-sp` does that and is worth its own weekly cron entry, independent of prediction runs:
+
+```bash
+cd "/path/to/CFB Model" && .venv/bin/python -m cfb_model snapshot-sp
+```
+
+The first capture of a week wins, so a later re-run cannot overwrite ratings that were public
+before kickoff with ones that already reflect that week's results.
+
+Weekly ratings for earlier seasons are simply gone. CFBD returns only the season-final value and
+ignores a `week` parameter; ESPN's 2019–2023 weekly articles are paywalled in the archive; and
+Football Outsiders' pages, though richly archived, were captured after each season ended (and
+pre-2014 uses an older, incompatible scale). Seasons before 2024 therefore keep season-final SP+
+in training, which is the main open calibration problem described above.
+
 ## Storage
 
 Everything lives in one SQLite file, `data/cfb.db`: per-team game frames, betting lines from all
