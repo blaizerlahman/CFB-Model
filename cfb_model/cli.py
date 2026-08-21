@@ -173,8 +173,11 @@ def _cmd_backtest(args: argparse.Namespace) -> int:
 
     settings = get_settings()
     exclude = ("SP",) if getattr(args, "no_sp", False) else ()
+    label = "nosp" if exclude else ""
+    if args.bins != "legacy":
+        label = f"{label}_{args.bins}" if label else args.bins
     run_backtest(Store(settings.db_path), args.year, args.seed, settings,
-                 exclude_features=exclude, label="nosp" if exclude else "")
+                 exclude_features=exclude, label=label, bin_set=args.bins)
     return 0
 
 
@@ -213,6 +216,46 @@ def _cmd_matchup(args: argparse.Namespace) -> int:
               f"(spreadDiff {result['spread_diff']:+g})")
         if result.get("success_rate") is not None:
             print(f"Historical success rate: {result['success_rate'] * 100:.2f}% ({result['tier']})")
+    return 0
+
+
+@_locked
+def _cmd_rebuild_bins(args: argparse.Namespace) -> int:
+    import pandas as pd
+
+    from cfb_model.analysis.bins import (
+        bins_from_replays,
+        collect_replays,
+        summarize,
+    )
+    from cfb_model.config import get_settings
+    from cfb_model.data.store import Store
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+    out_dir = settings.output_root / "bins"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.from_replays:
+        replays = pd.read_csv(args.from_replays)
+        print(f"Loaded {len(replays)} pooled games from {args.from_replays}")
+    else:
+        seasons = [int(x) for x in args.seasons.split(",") if x.strip()]
+        for season in seasons:
+            if not store.sp_weeks(season):
+                print(f"Season {season} has no weekly SP+ snapshots; it cannot be replayed "
+                      "without leaking end-of-season ratings.", file=sys.stderr)
+                return 1
+        replays = collect_replays(store, seasons, reps=args.reps, settings=settings)
+        replays.to_csv(out_dir / "leakfree_replays.csv", index=False)
+
+    bins = bins_from_replays(replays)
+    store.upsert_bin_set(args.name, bins)
+    csv_path = out_dir / f"Bin_Data_{args.name}.csv"
+    bins.to_csv(csv_path)
+    print(summarize(bins))
+    print(f"\nStored bin set {args.name!r}; wrote {csv_path}")
+    print("The original Bin Data/Bin_Data.csv is unchanged.")
     return 0
 
 
@@ -303,10 +346,22 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("backtest", help="replay a past season with as-of models")
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--seed", type=int, default=50)
+    p.add_argument("--bins", type=str, default="legacy",
+                   help="named bin set to grade with (default: legacy)")
     p.add_argument("--no-sp", action="store_true",
                    help="train and predict without SP+ features (historical SP+ rows carry "
                         "the season-final rating, which leaks end-of-season information)")
     p.set_defaults(handler=_cmd_backtest)
+
+    p = sub.add_parser("rebuild-bins",
+                       help="recalibrate the spread-differential success table from leak-free "
+                            "replays (only seasons with weekly SP+ snapshots qualify)")
+    p.add_argument("--seasons", type=str, default="2024,2025")
+    p.add_argument("--reps", type=int, default=5)
+    p.add_argument("--name", type=str, default="leakfree")
+    p.add_argument("--from-replays", type=str, default=None,
+                   help="build from an existing pooled replay CSV instead of re-running them")
+    p.set_defaults(handler=_cmd_rebuild_bins)
 
     p = sub.add_parser("snapshot-sp",
                        help="record this week's SP+ ratings (run weekly in-season; past weeks "

@@ -56,7 +56,7 @@ def preferred_lines_for(store: Store, fbs_full: dict, year: int, week: int) -> p
 def run_backtest(store: Store, year: int, random_state: int = 50,
                  settings: Settings | None = None, log=print,
                  exclude_features: tuple[str, ...] = (),
-                 label: str = "") -> pd.DataFrame:
+                 label: str = "", bin_set: str = "legacy") -> pd.DataFrame:
     settings = settings or get_settings()
     out_dir = settings.output_root / "backtests" / str(year)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -73,6 +73,10 @@ def run_backtest(store: Store, year: int, random_state: int = 50,
     # The derived skip rule, applied as-of this season.
     skip = {team for team in FBS_SINCE
             if team not in models}
+
+    bins = store.load_bin_set(bin_set)
+    if bins.empty:
+        raise ValueError(f"bin set {bin_set!r} is empty — rebuild or pick another")
 
     fbs_full = store.load_all_team_frames("fbs")
     fcs_full = store.load_all_team_frames("fcs")
@@ -116,7 +120,7 @@ def run_backtest(store: Store, year: int, random_state: int = 50,
         preds = preds.copy()
         preds["day"] = "bt"
 
-        graded = grade_week(preds, store.load_bins(), fbs_full, set(fcs_full), log=lambda s: None)
+        graded = grade_week(preds, bins, fbs_full, set(fcs_full), log=lambda s: None)
         graded["week"] = week
         all_results.append(graded)
         wins = int((graded["result"] == 1).sum())

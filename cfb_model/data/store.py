@@ -53,6 +53,16 @@ CREATE TABLE IF NOT EXISTS talent (
   PRIMARY KEY (season, school)
 );
 
+-- Named bin sets. The original table above is left untouched so the shipped
+-- legacy calibration stays available for comparison.
+CREATE TABLE IF NOT EXISTS bin_sets (
+  name TEXT NOT NULL,
+  lower_bin REAL NOT NULL, upper_bin REAL NOT NULL,
+  success_rate REAL, game_count REAL,
+  created_at TEXT DEFAULT (datetime('now')),
+  PRIMARY KEY (name, lower_bin, upper_bin)
+);
+
 CREATE TABLE IF NOT EXISTS bins (
   lower_bin REAL NOT NULL, upper_bin REAL NOT NULL,
   success_rate REAL, game_count REAL,
@@ -253,6 +263,34 @@ class Store:
             self.conn,
         )
         return df
+
+    def upsert_bin_set(self, name: str, bins: pd.DataFrame) -> None:
+        """Store a named calibration. Replaces only that name."""
+        rows = [
+            (name, r.lowerBin, r.upperBin,
+             None if pd.isna(r.successRate) else float(r.successRate),
+             float(r.gameCount))
+            for r in bins.itertuples(index=False)
+        ]
+        with self.conn:
+            self.conn.execute("DELETE FROM bin_sets WHERE name = ?", (name,))
+            self.conn.executemany(
+                "INSERT INTO bin_sets (name, lower_bin, upper_bin, success_rate, game_count)"
+                " VALUES (?,?,?,?,?)", rows)
+
+    def load_bin_set(self, name: str) -> pd.DataFrame:
+        """Load a named calibration; 'legacy' falls back to the original table."""
+        if name == "legacy":
+            return self.load_bins()
+        return pd.read_sql_query(
+            "SELECT lower_bin AS lowerBin, upper_bin AS upperBin,"
+            " success_rate AS successRate, game_count AS gameCount"
+            " FROM bin_sets WHERE name = ? ORDER BY lower_bin",
+            self.conn, params=(name,))
+
+    def bin_set_names(self) -> list[str]:
+        return [r[0] for r in self.conn.execute(
+            "SELECT DISTINCT name FROM bin_sets ORDER BY name")]
 
     def upsert_talent(self, season: int, talent: pd.DataFrame) -> None:
         rows = [(season, r.School, float(r.Talent)) for r in talent.itertuples(index=False)]
