@@ -48,9 +48,11 @@
     const found = {};
     const query = encodeURIComponent(`college football ${year} week sp+ rankings`);
     try {
+      // Public endpoint: it answers with Access-Control-Allow-Origin: *, which
+      // the browser refuses to combine with credentials, so omit them here.
       const resp = await fetch(
         `https://site.web.api.espn.com/apis/search/v2?region=us&lang=en&limit=50&query=${query}`,
-        { credentials: "include" });
+        { credentials: "omit" });
       if (!resp.ok) return found;
       const data = await resp.json();
       for (const group of data.results || []) {
@@ -141,26 +143,56 @@
   }
   const text = JSON.stringify(payload, null, 1);
 
-  // Prefer letting you drop the file straight into the project.
-  if (window.showSaveFilePicker) {
-    try {
-      const handle = await window.showSaveFilePicker({
-        suggestedName: OUTFILE,
-        types: [{ description: "JSON", accept: { "application/json": [".json"] } }],
-      });
-      const w = await handle.createWritable();
-      await w.write(text);
-      await w.close();
-      console.log(`saved ${OUTFILE} — now run:  python -m cfb_model import-sp-json`);
-      return;
-    } catch (_) { /* cancelled or unsupported; fall through to download */ }
+  // Keep the payload reachable no matter what happens below.
+  window.__SP_PLUS_JSON = text;
+  console.log("payload also available as window.__SP_PLUS_JSON");
+
+  function fallbackDownload() {
+    // octet-stream so the browser saves rather than renders the JSON.
+    const url = URL.createObjectURL(new Blob([text], { type: "application/octet-stream" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = OUTFILE;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
-  a.download = OUTFILE;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  console.log(`downloaded ${OUTFILE} to your Downloads folder — now run:  ` +
-              `python -m cfb_model import-sp-json`);
+
+  // showSaveFilePicker needs a real user gesture, which a console run does not
+  // have — so put a button on the page and let the click supply it.
+  const btn = document.createElement("button");
+  btn.textContent = `Save ${OUTFILE} (${totalOk} articles)`;
+  Object.assign(btn.style, {
+    position: "fixed", zIndex: 2147483647, top: "16px", right: "16px",
+    padding: "14px 18px", fontSize: "15px", fontWeight: "600",
+    background: "#0b7", color: "#fff", border: "none", borderRadius: "8px",
+    cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,.35)",
+  });
+  btn.onclick = async () => {
+    btn.disabled = true;
+    try {
+      if (window.showSaveFilePicker) {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: OUTFILE,
+          types: [{ description: "JSON", accept: { "application/json": [".json"] } }],
+        });
+        const w = await handle.createWritable();
+        await w.write(text);
+        await w.close();
+        console.log(`saved ${OUTFILE} — now run:  python -m cfb_model import-sp-json`);
+        btn.textContent = "Saved";
+        return;
+      }
+    } catch (err) {
+      console.warn("save picker unavailable or cancelled; downloading instead", err);
+    }
+    fallbackDownload();
+    btn.textContent = "Downloaded";
+    console.log(`downloaded ${OUTFILE} — now run:  python -m cfb_model import-sp-json`);
+  };
+  document.body.appendChild(btn);
+  console.log("\nClick the green Save button at the top right of the page to write the file.");
+  console.log("Choose the project's  output/sp_manual  folder and the importer needs no arguments.");
 })();

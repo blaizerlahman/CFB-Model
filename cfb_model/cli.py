@@ -309,6 +309,28 @@ def _cmd_import_sp_sheet(args: argparse.Namespace) -> int:
     return 0
 
 
+@_locked
+def _cmd_apply_weekly_sp(args: argparse.Namespace) -> int:
+    from cfb_model.config import get_settings
+    from cfb_model.data.apply_sp import apply_weekly_sp, sp_variety
+    from cfb_model.data.store import Store
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+    before = sp_variety(store, args.year)
+    try:
+        apply_weekly_sp(store, args.year)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    after = sp_variety(store, args.year)
+    if not before.empty and not after.empty:
+        print(f"  distinct SP+ values per team: {before.distinct_sp.mean():.1f} "
+              f"-> {after.distinct_sp.mean():.1f} (1.0 means season-final)")
+    print(f"Retrain to use them:  python -m cfb_model setup-season --year <next season>")
+    return 0
+
+
 def _cmd_import_sp_json(args: argparse.Namespace) -> int:
     from cfb_model.config import get_settings
     from cfb_model.data.sp_backfill import import_scraped_json
@@ -439,6 +461,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--sheet-id", type=str, default=None)
     p.set_defaults(handler=_cmd_import_sp_sheet)
+
+    p = sub.add_parser("apply-weekly-sp",
+                       help="rewrite a season's SP+/SP_opp game features from its weekly "
+                            "snapshots (run after importing them)")
+    p.add_argument("--year", type=int, required=True)
+    p.set_defaults(handler=_cmd_apply_weekly_sp)
 
     p = sub.add_parser("import-sp-json",
                        help="import SP+ ratings collected by scripts/espn_sp_scrape.js")
