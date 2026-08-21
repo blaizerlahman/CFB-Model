@@ -17,9 +17,18 @@ from cfb_model.constants import (
 from cfb_model.features.rolling import add_rolling_features
 
 
-def feature_columns(df: pd.DataFrame) -> list[str]:
-    """~104 model features: any column containing rolling_sum/talent/SP."""
-    return [c for c in df.columns if any(s in c for s in FEATURE_SUBSTRINGS)]
+def feature_columns(df: pd.DataFrame, exclude: tuple[str, ...] = ()) -> list[str]:
+    """~104 model features: any column containing rolling_sum/talent/SP.
+
+    `exclude` drops columns whose name contains any of the given substrings.
+    It exists for leak-free experiments: historical SP+ rows carry the
+    season-FINAL rating (CFBD serves only one per season), so training on
+    them leaks end-of-season information that is not available at kickoff.
+    """
+    cols = [c for c in df.columns if any(s in c for s in FEATURE_SUBSTRINGS)]
+    if exclude:
+        cols = [c for c in cols if not any(e in c for e in exclude)]
+    return cols
 
 
 def own_rolling_columns(df: pd.DataFrame) -> list[str]:

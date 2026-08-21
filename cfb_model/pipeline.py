@@ -89,7 +89,7 @@ def ingest_week(store: Store, client: CfbdClient, year: int, week: int,
         sp = store.load_sp(year, sp_weeks[-1])
     else:
         sp = mapping.sp_to_frame(client.sp_ratings(year))
-        store.upsert_sp(year, week, sp)
+        store.upsert_sp(year, week, sp, overwrite=False)
 
     talent_table = store.load_talent(year)
     if week == 1 and talent_table.empty:
@@ -185,6 +185,31 @@ def ingest_week(store: Store, client: CfbdClient, year: int, week: int,
 
     return {"year": year, "week": week, "teams_updated": len(updated),
             "api_calls": client.calls_made}
+
+
+def capture_sp_snapshot(store: Store, client: CfbdClient, year: int, week: int,
+                        log=print) -> pd.DataFrame:
+    """Record this week's SP+ ratings, then return them.
+
+    CFBD serves SP+ live during a season and only freezes it afterwards, so
+    each week has to be captured while it is current — the past weeks of any
+    season are unrecoverable once it ends. The first capture of a week wins:
+    re-running later in the same week must not replace ratings that were
+    public before kickoff with ones that already reflect the week's results.
+    """
+    sp = mapping.sp_to_frame(client.sp_ratings(year))
+    if sp.empty:
+        log(f"WARNING: CFBD returned no SP+ ratings for {year} week {week}.")
+        return store.load_sp(year, week)
+
+    if store.upsert_sp(year, week, sp, overwrite=False):
+        log(f"Recorded SP+ snapshot for {year} week {week} ({len(sp)} teams).")
+        return sp
+
+    existing = store.load_sp(year, week)
+    log(f"SP+ snapshot for {year} week {week} already recorded "
+        f"({len(existing)} teams); keeping the earlier capture.")
+    return existing
 
 
 def resolve_talent(store: Store, client: CfbdClient, year: int, log=print) -> pd.DataFrame:
@@ -319,8 +344,7 @@ def predict_run(store: Store, client: CfbdClient, year: int | None = None,
     store.upsert_lines(year, week, lines)
     preferred = select_preferred_lines(lines)
 
-    sp = mapping.sp_to_frame(client.sp_ratings(year))
-    store.upsert_sp(year, week, sp)
+    sp = capture_sp_snapshot(store, client, year, week, log)
     talent = resolve_talent(store, client, year, log)
 
     fbs, fcs = load_gated_frames(store)

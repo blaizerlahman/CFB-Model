@@ -268,7 +268,18 @@ class Store:
             params=(season,),
         )
 
-    def upsert_sp(self, season: int, week: int, sp: pd.DataFrame) -> None:
+    def upsert_sp(self, season: int, week: int, sp: pd.DataFrame,
+                  overwrite: bool = True) -> bool:
+        """Store a weekly SP+ snapshot. Returns True if anything was written.
+
+        `overwrite=False` makes the first snapshot of a week final. In-season
+        that is the safe default: SP+ publishes once a week, so the first
+        capture holds the ratings that were public before the week's games,
+        while a later re-run (say Sunday, once results are in) could otherwise
+        replace them with ratings that already know those results.
+        """
+        if not overwrite and self.load_sp(season, week).shape[0] > 0:
+            return False
         rows = [
             (season, week, r.Team, None if pd.isna(r.Rating) else float(r.Rating))
             for r in sp.itertuples(index=False)
@@ -277,6 +288,7 @@ class Store:
             self.conn.executemany(
                 "INSERT OR REPLACE INTO sp_ratings (season, week, team, rating) VALUES (?,?,?,?)", rows
             )
+        return True
 
     def load_sp(self, season: int, week: int) -> pd.DataFrame:
         return pd.read_sql_query(

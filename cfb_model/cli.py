@@ -172,7 +172,9 @@ def _cmd_backtest(args: argparse.Namespace) -> int:
     from cfb_model.data.store import Store
 
     settings = get_settings()
-    run_backtest(Store(settings.db_path), args.year, args.seed, settings)
+    exclude = ("SP",) if getattr(args, "no_sp", False) else ()
+    run_backtest(Store(settings.db_path), args.year, args.seed, settings,
+                 exclude_features=exclude, label="nosp" if exclude else "")
     return 0
 
 
@@ -211,6 +213,34 @@ def _cmd_matchup(args: argparse.Namespace) -> int:
               f"(spreadDiff {result['spread_diff']:+g})")
         if result.get("success_rate") is not None:
             print(f"Historical success rate: {result['success_rate'] * 100:.2f}% ({result['tier']})")
+    return 0
+
+
+@_locked
+def _cmd_snapshot_sp(args: argparse.Namespace) -> int:
+    from datetime import datetime
+
+    from cfb_model.api.client import CfbdClient
+    from cfb_model.api.mapping import current_week
+    from cfb_model.config import get_settings
+    from cfb_model.data.store import Store
+    from cfb_model.pipeline import capture_sp_snapshot
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+    client = CfbdClient(settings)
+
+    year, week = args.year, args.week
+    if year is None or week is None:
+        detected = current_week(client.calendar(year or datetime.now().year))
+        if detected is None:
+            print("Off-season: no week to snapshot.")
+            return 0
+        year = year or detected[0]
+        week = week if week is not None else detected[1]
+
+    capture_sp_snapshot(store, client, year, week)
+    print(f"API calls: {client.calls_made}")
     return 0
 
 
@@ -273,7 +303,17 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("backtest", help="replay a past season with as-of models")
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--seed", type=int, default=50)
+    p.add_argument("--no-sp", action="store_true",
+                   help="train and predict without SP+ features (historical SP+ rows carry "
+                        "the season-final rating, which leaks end-of-season information)")
     p.set_defaults(handler=_cmd_backtest)
+
+    p = sub.add_parser("snapshot-sp",
+                       help="record this week's SP+ ratings (run weekly in-season; past weeks "
+                            "cannot be recovered once a season ends)")
+    p.add_argument("--year", type=int, default=None)
+    p.add_argument("--week", type=int, default=None)
+    p.set_defaults(handler=_cmd_snapshot_sp)
 
     p = sub.add_parser("backfill-sp", help="fill weekly SP+ snapshots for a past season from Wayback captures")
     p.add_argument("--year", type=int, required=True)

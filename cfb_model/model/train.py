@@ -89,7 +89,8 @@ def train_team_model(team_df, features: list[str], season: int,
     return better_pipe, float(best_alpha), int(len(y))
 
 
-def train_all(store: Store, season: int, random_state=None, log=print) -> dict:
+def train_all(store: Store, season: int, random_state=None, log=print,
+              exclude_features: tuple[str, ...] = ()) -> dict:
     """Train every FBS team passing the >=56-game gate, as-of `season`:
     frames are truncated to Year < season BEFORE training so predictMissing
     sees exactly what p6 saw (its frames ended at the prior season). Returns
@@ -105,7 +106,7 @@ def train_all(store: Store, season: int, random_state=None, log=print) -> dict:
             if len(df) < MIN_FBS_GAMES:
                 log(f"  {team}: {len(df)} games < {MIN_FBS_GAMES} — no model (skip rule)")
                 continue
-            features = feature_columns(df)
+            features = feature_columns(df, exclude=exclude_features)
             result = train_team_model(df, features, season, random_state)
             if result is None:
                 log(f"  {team}: fewer than {MIN_TRAIN_ROWS} training rows — no model")

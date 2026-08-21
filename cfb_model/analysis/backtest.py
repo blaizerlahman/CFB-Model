@@ -54,13 +54,19 @@ def preferred_lines_for(store: Store, fbs_full: dict, year: int, week: int) -> p
 
 
 def run_backtest(store: Store, year: int, random_state: int = 50,
-                 settings: Settings | None = None, log=print) -> pd.DataFrame:
+                 settings: Settings | None = None, log=print,
+                 exclude_features: tuple[str, ...] = (),
+                 label: str = "") -> pd.DataFrame:
     settings = settings or get_settings()
     out_dir = settings.output_root / "backtests" / str(year)
     out_dir.mkdir(parents=True, exist_ok=True)
+    suffix = f"_{label}" if label else ""
 
+    if exclude_features:
+        log(f"Excluding features containing: {', '.join(exclude_features)}")
     log(f"Training as-of-{year} models (seed={random_state}) — this takes a while...")
-    trained = train_all(store, year, random_state=random_state, log=lambda s: None)
+    trained = train_all(store, year, random_state=random_state, log=lambda s: None,
+                        exclude_features=exclude_features)
     models = {team: pipe for team, (pipe, _, _) in trained.items()}
     log(f"  {len(models)} models trained")
 
@@ -99,7 +105,7 @@ def run_backtest(store: Store, year: int, random_state: int = 50,
         fcs = {k: v for k, v in fcs.items() if len(v) >= MIN_FCS_GAMES}
 
         fbs, fcs = build_upcoming_frames(fbs, fcs, preferred, sp, talent, year, week)
-        features = feature_columns(next(iter(fbs.values())))
+        features = feature_columns(next(iter(fbs.values())), exclude=exclude_features)
 
         import warnings
         with warnings.catch_warnings():
@@ -122,8 +128,10 @@ def run_backtest(store: Store, year: int, random_state: int = 50,
         return pd.DataFrame(columns=list(RESULTS_COLUMNS) + ["week"])
 
     season_results = pd.concat(all_results, ignore_index=True)
-    season_results.to_csv(out_dir / f"backtest_{year}_results.csv")
-    log(f"\n=== {year} backtest ({len(season_results)} games) ===")
+    out_path = out_dir / f"backtest_{year}{suffix}_results.csv"
+    season_results.to_csv(out_path)
+    log(f"\n=== {year} backtest{(' [' + label + ']') if label else ''} "
+        f"({len(season_results)} games) ===")
     log(tier_breakdown(season_results, label_best_empty="No best bets"))
-    log(f"\nSaved -> {out_dir / f'backtest_{year}_results.csv'}")
+    log(f"\nSaved -> {out_path}")
     return season_results
