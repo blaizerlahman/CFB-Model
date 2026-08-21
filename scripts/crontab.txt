@@ -1,0 +1,18 @@
+HOME=/Users/blaizelahman
+30 */6 * * * /usr/local/bin/ob_sync >> /tmp/ob_sync.log 2>&1
+
+
+
+# --- CFB model (added 2026-08-21) ---------------------------------------
+# Machine runs on America/New_York, so these times are Eastern.
+# Predictions, every day at 4:00 PM. Each run stores its own day tag with the
+# line that was live at the time, so line movement is captured day by day.
+0 16 * * * cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model predict >> logs/cron_predict.log 2>&1
+
+# SP+ snapshot, Tuesdays at 10:00 PM Eastern = 9:00 PM Central. SP+ is served
+# live and frozen once a season ends, so a week not captured now is lost.
+0 22 * * 2 cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model snapshot-sp >> logs/cron_snapshot.log 2>&1
+
+# Grade the week just finished, Sundays at 2:00 PM: ingest its results first,
+# then score the predictions against them.
+0 14 * * 0 cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model update --current >> logs/cron_analyze.log 2>&1 && .venv/bin/python -m cfb_model analyze --last-week >> logs/cron_analyze.log 2>&1

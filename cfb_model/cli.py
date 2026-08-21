@@ -75,8 +75,10 @@ def _cmd_update(args: argparse.Namespace) -> int:
             print("Off-season: nothing to ingest.")
             return 0
         year = year or detected[0]
-        # Default: ingest the most recent COMPLETED week.
-        week = week if week is not None else detected[1] - 1
+        # Default: the most recent COMPLETED week. With --current, the week now
+        # in progress, whose games have finished by the weekend.
+        offset = 0 if getattr(args, "current", False) else 1
+        week = week if week is not None else detected[1] - offset
     if week < 1:
         print("No completed week to ingest yet.")
         return 0
@@ -111,6 +113,18 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     settings = get_settings()
     store = Store(settings.db_path)
 
+    if getattr(args, "last_week", False) and args.week is None:
+        from cfb_model.api.client import CfbdClient
+        from cfb_model.api.mapping import current_week
+
+        client = CfbdClient(settings)
+        detected = current_week(client.calendar(args.year or __import__("datetime").datetime.now().year))
+        if detected is None:
+            print("Off-season: nothing to grade.")
+            return 0
+        args.year, args.week = detected
+        print(f"Grading the week just finished: {args.year} week {args.week}")
+
     year = args.year
     if year is None:
         row = store.conn.execute("SELECT MAX(season) FROM predictions").fetchone()
@@ -123,12 +137,13 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
         preds = store.load_predictions(year, args.week)
         if preds.empty:
             print(f"No stored predictions for {year} week {args.week}.")
-            return 1
+            return 0 if getattr(args, "last_week", False) else 1
         fbs, fcs = load_gated_frames(store)
         results = grade_week(preds, store.load_bin_set(settings.bin_set), fbs, set(fcs))
         if results.empty:
             print("No gradable games (are the week's results ingested?).")
-            return 1
+            # On a schedule this is a normal "not yet", not a failure.
+            return 0 if getattr(args, "last_week", False) else 1
         print(f"=== {year} week {args.week} ===")
         print(tier_breakdown(results))
         print()
@@ -417,11 +432,17 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("update", help="ingest a finished week's box scores and lines")
     p.add_argument("--year", type=int, default=None)
     p.add_argument("--week", type=int, default=None)
+    p.add_argument("--current", action="store_true",
+                   help="ingest the week now in progress rather than the one before it; "
+                        "use once its games have finished (e.g. Sunday)")
     p.set_defaults(handler=_cmd_update)
 
     p = sub.add_parser("analyze", help="success analysis: week grading or season roll-up")
     p.add_argument("--year", type=int, default=None)
     p.add_argument("--week", type=int, default=None)
+    p.add_argument("--last-week", action="store_true",
+                   help="grade the week whose games have just finished, worked out from "
+                        "the schedule; exits quietly out of season")
     p.set_defaults(handler=_cmd_analyze)
 
     p = sub.add_parser("setup-season", help="backfill missing data via API and retrain team models")

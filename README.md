@@ -56,6 +56,24 @@ A daily crontab line is just:
 cd "/path/to/CFB Model" && .venv/bin/python -m cfb_model predict
 ```
 
+A full weekly schedule lives in `scripts/crontab.txt` — predictions daily,
+an SP+ snapshot every Tuesday night, and grading every Sunday afternoon.
+Install it with:
+
+```bash
+crontab scripts/crontab.txt
+```
+
+Run that from a terminal you are sitting at: macOS asks for permission the
+first time anything edits your crontab, and the prompt cannot appear for a
+background process. If cron proves unreliable under macOS's privacy controls,
+the same three commands work just as well from launchd or any scheduler.
+
+The Sunday job is two commands: `update --current` pulls in the results of the
+week that just finished, then `analyze --last-week` scores that week's
+predictions against them. Both work out the week from the schedule, and both
+exit quietly out of season, so the jobs can stay installed year round.
+
 ### Once per season
 
 | Command | What it does |
