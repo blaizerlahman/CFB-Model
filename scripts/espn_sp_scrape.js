@@ -1,39 +1,75 @@
-/* Collect weekly SP+ ratings from ESPN articles you have access to.
+/* Collect weekly SP+ ratings from the ESPN articles your subscription covers.
  *
- * ESPN refuses server-side requests, so these pages can only be read by a
- * signed-in browser. Run this in the DevTools console ON espn.com (any ESPN
- * page) while logged in: the fetches are same-origin, so your session cookie
+ * ESPN answers server-side requests with an empty 202, so these pages can only
+ * be read by a signed-in browser. Run this in the DevTools console ON an
+ * espn.com tab while logged in: the fetches are same-origin, so your session
  * rides along and the full article body comes back.
  *
- * It downloads one JSON file. Feed that to:
- *     python -m cfb_model import-sp-json --file sp_plus_<year>.json
+ * Covers every season that still needs weekly ratings (2019-2023). 2024 and
+ * 2025 are already stored from other sources and are deliberately skipped.
  *
- * Edit YEAR and ARTICLES below for other seasons. Week numbers come from the
- * URL slug when present, otherwise from the article title.
+ * It saves ONE json for all seasons. Chrome will offer a folder picker —
+ * choose the project's  output/sp_manual  folder and the importer will find it
+ * with no arguments:
+ *
+ *     python -m cfb_model import-sp-json
+ *
+ * If the picker is unavailable it falls back to your Downloads folder, which
+ * the importer also checks.
  */
 (async () => {
-  const YEAR = 2023;
-  const ARTICLES = [
-    "https://www.espn.com/college-football/insider/story/_/id/38196497", // preseason
-    "https://www.espn.com/college-football/insider/story/_/id/38332658", // after wk 1
-    "https://www.espn.com/college-football/insider/story/_/id/38368917", // after wk 2
-    "https://www.espn.com/college-football/insider/story/_/id/38422011", // after wk 3
-    "https://www.espn.com/college-football/insider/story/_/id/38478223", // after wk 4
-    "https://www.espn.com/college-football/insider/story/_/id/38538922", // after wk 5
-    "https://www.espn.com/college-football/insider/story/_/id/38663643", // after wk 7
-    "https://www.espn.com/college-football/insider/story/_/id/38718073", // after wk 8
-    "https://www.espn.com/college-football/insider/story/_/id/38727877", // after wk 9
-    "https://www.espn.com/college-football/insider/story/_/id/38823946", // after wk 10
-    "https://www.espn.com/college-football/insider/story/_/id/38881198", // after wk 11
-    "https://www.espn.com/college-football/insider/story/_/id/38934718", // after wk 12
-    "https://www.espn.com/college-football/insider/story/_/id/38983348", // after wk 13
-  ];
+  const DELAY_MS = 4000;          // gentle with ESPN; a burst gets throttled
+  const OUTFILE = "cfb_sp_plus_backfill.json";
+
+  // Article ids per season. The week noted is the week the article REPORTS ON;
+  // its ratings are the ones in hand for the following week, and the importer
+  // applies that shift. Add any you find: only the id matters, the slug is
+  // ignored by ESPN.
+  const KNOWN = {
+    2023: {
+      0: "38196497", 1: "38332658", 2: "38368917", 3: "38422011", 4: "38478223",
+      5: "38538922", 7: "38663643", 8: "38718073", 9: "38727877", 10: "38823946",
+      11: "38881198", 12: "38934718", 13: "38983348",
+      // week 6 not located; see the note printed at the end.
+    },
+    2022: { 2: "34569954" },
+    2021: {},
+    2020: {},
+    2019: { 6: "27781603" },
+  };
 
   const TEAM_CELL = /^\s*(\d{1,3})\.\s*(.+?)(?:\s*\((\d+-\d+)\))?\s*$/;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const idUrl = (id) => `https://www.espn.com/college-football/insider/story/_/id/${id}`;
 
-  // The ratings table is the biggest run of "N. Team" rows on the page;
-  // smaller runs are strength-of-schedule and resume sidebars.
+  // ESPN's search barely indexes older SP+ pieces, but it costs one request
+  // per season and quietly fills gaps when it does return something.
+  async function discover(year) {
+    const found = {};
+    const query = encodeURIComponent(`college football ${year} week sp+ rankings`);
+    try {
+      const resp = await fetch(
+        `https://site.web.api.espn.com/apis/search/v2?region=us&lang=en&limit=50&query=${query}`,
+        { credentials: "include" });
+      if (!resp.ok) return found;
+      const data = await resp.json();
+      for (const group of data.results || []) {
+        for (const item of group.contents || []) {
+          const link = (item.link || {}).web || "";
+          const m = link.match(/\/id\/(\d+)\/([^/?#]*)/);
+          if (!m || !/sp\+/i.test(m[2])) continue;
+          const yr = m[2].match(/(20\d\d)/);
+          if (!yr || Number(yr[1]) !== year) continue;
+          const wk = m[2].match(/week-(\d+)/);
+          found[wk ? Number(wk[1]) : 0] = m[1];
+        }
+      }
+    } catch (_) { /* discovery is best-effort */ }
+    return found;
+  }
+
+  // The ratings table is the biggest run of "N. Team" rows; shorter runs are
+  // the strength-of-schedule and resume sidebars.
   function extractRatings(doc) {
     let best = [];
     for (const table of doc.querySelectorAll("table")) {
@@ -52,55 +88,79 @@
     return best;
   }
 
-  function weekOf(url, title) {
-    const fromUrl = /week-(\d+)/i.exec(url);
-    if (fromUrl) return parseInt(fromUrl[1], 10);
-    const fromTitle = /week\s*(\d+)/i.exec(title || "");
-    if (fromTitle) return parseInt(fromTitle[1], 10);
-    if (/preseason/i.test(title || "") || /preseason/i.test(url)) return 0;
-    return null;
-  }
+  const payload = { captured: new Date().toISOString(), seasons: [] };
+  let totalOk = 0, totalTried = 0;
 
-  const out = { year: YEAR, captured: new Date().toISOString(), articles: [] };
-
-  for (const url of ARTICLES) {
-    try {
-      const resp = await fetch(url, { credentials: "include" });
-      if (!resp.ok) {
-        console.warn(`HTTP ${resp.status} for ${url}`);
-        out.articles.push({ url, error: `HTTP ${resp.status}` });
-        continue;
-      }
-      const doc = new DOMParser().parseFromString(await resp.text(), "text/html");
-      const title = (doc.querySelector("title") || {}).textContent || "";
-      // The canonical URL carries the slug even when we requested the bare id.
-      const canonical = (doc.querySelector('link[rel="canonical"]') || {}).href || url;
-      const rows = extractRatings(doc);
-      const week = weekOf(canonical, title);
-
-      out.articles.push({ url, canonical, title, week, count: rows.length, rows });
-      const flag = rows.length >= 100 ? "ok" : "SUSPICIOUS - paywalled or not loaded?";
-      console.log(`week ${week}: ${rows.length} teams  ${flag}  ${title.slice(0, 60)}`);
-    } catch (err) {
-      console.warn(`failed ${url}`, err);
-      out.articles.push({ url, error: String(err) });
+  for (const year of Object.keys(KNOWN).map(Number).sort()) {
+    const ids = { ...KNOWN[year] };
+    const discovered = await discover(year);
+    let added = 0;
+    for (const [wk, id] of Object.entries(discovered)) {
+      if (!(wk in ids)) { ids[wk] = id; added++; }
     }
-    await sleep(1500); // be gentle; ESPN throttles bursts
+    const weeks = Object.keys(ids).map(Number).sort((a, b) => a - b);
+    console.log(`\n=== ${year}: ${weeks.length} articles` +
+                (added ? ` (${added} found by search)` : "") + ` ===`);
+    if (!weeks.length) { console.log("  none known — add ids to KNOWN above"); continue; }
+
+    const season = { year, articles: [] };
+    for (const week of weeks) {
+      const url = idUrl(ids[week]);
+      totalTried++;
+      try {
+        const resp = await fetch(url, { credentials: "include" });
+        if (!resp.ok) {
+          console.warn(`  week ${week}: HTTP ${resp.status}`);
+          season.articles.push({ url, week, error: `HTTP ${resp.status}` });
+        } else {
+          const doc = new DOMParser().parseFromString(await resp.text(), "text/html");
+          const rows = extractRatings(doc);
+          const title = (doc.querySelector("title") || {}).textContent || "";
+          season.articles.push({ url, week, title, count: rows.length, rows });
+          if (rows.length >= 100) {
+            totalOk++;
+            console.log(`  week ${week}: ${rows.length} teams  ok`);
+          } else {
+            console.warn(`  week ${week}: only ${rows.length} teams — paywalled or not ` +
+                         `rendered; it will be skipped on import`);
+          }
+        }
+      } catch (err) {
+        console.warn(`  week ${week}: ${err}`);
+        season.articles.push({ url, week, error: String(err) });
+      }
+      await sleep(DELAY_MS);
+    }
+    payload.seasons.push(season);
   }
 
-  const good = out.articles.filter((a) => (a.count || 0) >= 100).length;
-  console.log(`\ncollected ${good}/${ARTICLES.length} articles with a full table`);
-  if (!good) {
+  console.log(`\ncollected ${totalOk}/${totalTried} articles with a full table`);
+  if (!totalOk) {
     console.warn("Nothing usable. Are you signed in, and running this on an espn.com tab?");
     return;
   }
+  const text = JSON.stringify(payload, null, 1);
 
-  const blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
+  // Prefer letting you drop the file straight into the project.
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: OUTFILE,
+        types: [{ description: "JSON", accept: { "application/json": [".json"] } }],
+      });
+      const w = await handle.createWritable();
+      await w.write(text);
+      await w.close();
+      console.log(`saved ${OUTFILE} — now run:  python -m cfb_model import-sp-json`);
+      return;
+    } catch (_) { /* cancelled or unsupported; fall through to download */ }
+  }
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `sp_plus_${YEAR}.json`;
+  a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+  a.download = OUTFILE;
   document.body.appendChild(a);
   a.click();
   a.remove();
-  console.log(`downloaded sp_plus_${YEAR}.json`);
+  console.log(`downloaded ${OUTFILE} to your Downloads folder — now run:  ` +
+              `python -m cfb_model import-sp-json`);
 })();

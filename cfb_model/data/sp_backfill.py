@@ -285,48 +285,77 @@ def import_saved_html(store: Store, year: int, directory, log=print) -> dict[int
     return stored
 
 
-def import_scraped_json(store: Store, path, year: int | None = None, log=print) -> dict[int, int]:
-    """Import the JSON produced by scripts/espn_sp_scrape.js.
+def locate_scraped_json(settings: Settings | None = None) -> Path | None:
+    """Find the collector's output without being told where it is.
 
-    Each entry records the week its article reports on; the ratings were
-    computed once that week finished, so they are stored under the FOLLOWING
-    week — the first week they could actually have been bet on.
+    The browser decides where a download lands, so rather than make that the
+    user's problem this checks the project folder the script suggests and then
+    the default Downloads folder, newest first.
+    """
+    settings = settings or get_settings()
+    candidates: list[Path] = []
+    for folder in (settings.output_root / "sp_manual",
+                   settings.project_root,
+                   Path.home() / "Downloads"):
+        if folder.is_dir():
+            candidates.extend(folder.glob("cfb_sp_plus_backfill*.json"))
+            candidates.extend(folder.glob("sp_plus_*.json"))
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: p.stat().st_mtime)
 
-    Team names arrive exactly as ESPN prints them and go through the same
-    normalisation as the Wayback path, so both routes land on identical keys.
+
+def _rows_to_table(rows: list[dict]) -> pd.DataFrame:
+    records = []
+    for row in rows:
+        name = str(row.get("team", "")).strip().rstrip(";").strip()
+        name = re.sub(r"\s+St\.$", " State", name)
+        name = ESPN_NAME_FIXES.get(name, name)
+        records.append({"Team": normalize_school(name), "Rating": float(row["rating"])})
+    return pd.DataFrame(records).drop_duplicates(subset=["Team"])
+
+
+def import_scraped_json(store: Store, path, year: int | None = None,
+                        log=print) -> dict[tuple[int, int], int]:
+    """Import ratings collected by scripts/espn_sp_scrape.js.
+
+    Accepts both the single-season shape and the multi-season one the current
+    script emits. Each article records the week it REPORTS on; those ratings
+    were computed once that week finished, so they are stored under the
+    following week — the first week they could have been bet on.
+
+    Returns {(season, stored_week): team_count}.
     """
     import json
-    from pathlib import Path
 
     payload = json.loads(Path(path).read_text())
-    year = year or payload.get("year")
-    if not year:
-        raise ValueError("No year in the file; pass --year explicitly.")
+    seasons = payload.get("seasons")
+    if seasons is None:  # older single-season file
+        seasons = [{"year": year or payload.get("year"), "articles": payload.get("articles", [])}]
 
-    stored: dict[int, int] = {}
-    for entry in payload.get("articles", []):
-        if entry.get("error"):
-            log(f"  {entry['url']}: {entry['error']}")
+    stored: dict[tuple[int, int], int] = {}
+    for season in seasons:
+        season_year = year or season.get("year")
+        if not season_year:
+            log("  a season block has no year; pass --year")
             continue
-        article_week = entry.get("week")
-        rows = entry.get("rows") or []
-        if article_week is None:
-            log(f"  {entry['url']}: no week identified, skipped")
-            continue
-        if len(rows) < 100:
-            log(f"  week {article_week}: only {len(rows)} teams — paywalled or partial, skipped")
-            continue
-
-        records = []
-        for row in rows:
-            name = str(row.get("team", "")).strip().rstrip(";").strip()
-            name = re.sub(r"\s+St\.$", " State", name)
-            name = ESPN_NAME_FIXES.get(name, name)
-            records.append({"Team": normalize_school(name), "Rating": float(row["rating"])})
-        table = pd.DataFrame(records).drop_duplicates(subset=["Team"])
-
-        target_week = article_week + 1
-        store.upsert_sp(year, target_week, table)
-        stored[target_week] = len(table)
-        log(f"  after week {article_week} -> {year} week {target_week} ({len(table)} teams)")
+        for entry in season.get("articles", []):
+            if entry.get("error"):
+                log(f"  {season_year} week {entry.get('week')}: {entry['error']}")
+                continue
+            article_week = entry.get("week")
+            rows = entry.get("rows") or []
+            if article_week is None:
+                log(f"  {entry.get('url')}: no week identified, skipped")
+                continue
+            if len(rows) < 100:
+                log(f"  {season_year} after week {article_week}: only {len(rows)} teams — "
+                    "paywalled or partial, skipped")
+                continue
+            table = _rows_to_table(rows)
+            target = int(article_week) + 1
+            store.upsert_sp(int(season_year), target, table)
+            stored[(int(season_year), target)] = len(table)
+            log(f"  {season_year} after week {article_week} -> week {target} "
+                f"({len(table)} teams)")
     return stored

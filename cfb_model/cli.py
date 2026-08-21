@@ -314,13 +314,24 @@ def _cmd_import_sp_json(args: argparse.Namespace) -> int:
     from cfb_model.data.sp_backfill import import_scraped_json
     from cfb_model.data.store import Store
 
+    from cfb_model.data.sp_backfill import locate_scraped_json
+
     settings = get_settings()
     store = Store(settings.db_path)
-    stored = import_scraped_json(store, args.file, args.year)
+    path = args.file or locate_scraped_json(settings)
+    if not path:
+        print("No collector output found. Run scripts/espn_sp_scrape.js in your "
+              "browser first, or pass --file.", file=sys.stderr)
+        return 1
+    print(f"Reading {path}")
+    stored = import_scraped_json(store, path, args.year)
     if not stored:
         print("Nothing imported.", file=sys.stderr)
         return 1
-    print(f"Imported weeks {sorted(stored)}")
+    seasons = sorted({s for s, _ in stored})
+    for season in seasons:
+        weeks = sorted(w for s, w in stored if s == season)
+        print(f"Imported {season} weeks {weeks}")
     return 0
 
 
@@ -431,7 +442,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("import-sp-json",
                        help="import SP+ ratings collected by scripts/espn_sp_scrape.js")
-    p.add_argument("--file", type=str, required=True)
+    p.add_argument("--file", type=str, default=None,
+                   help="defaults to the newest collector output found in "
+                        "output/sp_manual, the project root, or ~/Downloads")
     p.add_argument("--year", type=int, default=None)
     p.set_defaults(handler=_cmd_import_sp_json)
 

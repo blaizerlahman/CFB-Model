@@ -7,6 +7,7 @@ ratings computed after week N are the ones in hand for week N+1.
 """
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -36,7 +37,7 @@ def test_ratings_land_on_the_following_week(store, tmp_path):
         {"url": "u", "week": 4, "rows": make_rows()},
     ]})
     stored = import_scraped_json(store, path, log=lambda m: None)
-    assert stored == {5: 130}, "after-week-4 ratings belong to week 5"
+    assert stored == {(2023, 5): 130}, "after-week-4 ratings belong to week 5"
     assert store.sp_weeks(2023) == [5]
 
 
@@ -57,7 +58,7 @@ def test_partial_and_failed_articles_are_skipped(store, tmp_path):
     ]})
     messages = []
     stored = import_scraped_json(store, path, log=messages.append)
-    assert sorted(stored) == [7], "only the complete article should import"
+    assert sorted(stored) == [(2023, 7)], "only the complete article should import"
     assert any("paywalled or partial" in m for m in messages)
     assert any("HTTP 403" in m for m in messages)
     assert any("no week identified" in m for m in messages)
@@ -80,3 +81,46 @@ def test_year_argument_overrides_payload(store, tmp_path):
     import_scraped_json(store, path, year=2021, log=lambda m: None)
     assert store.sp_weeks(2021) == [2]
     assert store.sp_weeks(2023) == []
+
+
+def test_multi_season_payload(store, tmp_path):
+    """The collector emits every applicable season in one file."""
+    path = write(tmp_path, {"captured": "now", "seasons": [
+        {"year": 2022, "articles": [{"url": "a", "week": 3, "rows": make_rows()}]},
+        {"year": 2023, "articles": [{"url": "b", "week": 0, "rows": make_rows()},
+                                    {"url": "c", "week": 9, "rows": make_rows()}]},
+    ]})
+    stored = import_scraped_json(store, path, log=lambda m: None)
+    assert sorted(stored) == [(2022, 4), (2023, 1), (2023, 10)]
+    assert store.sp_weeks(2022) == [4]
+    assert store.sp_weeks(2023) == [1, 10]
+
+
+def test_locate_finds_newest_output(tmp_path, monkeypatch):
+    """The browser picks the download folder, so the importer goes looking."""
+    from cfb_model.config import Settings
+    from cfb_model.data.sp_backfill import locate_scraped_json
+
+    manual = tmp_path / "out" / "sp_manual"
+    manual.mkdir(parents=True)
+    old = manual / "cfb_sp_plus_backfill.json"
+    old.write_text("{}")
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "nohome"))
+
+    settings = Settings(project_root=tmp_path, output_root=tmp_path / "out")
+    assert locate_scraped_json(settings) == old
+
+    newer = manual / "cfb_sp_plus_backfill_2.json"
+    newer.write_text("{}")
+    import os, time
+    os.utime(newer, (time.time() + 10, time.time() + 10))
+    assert locate_scraped_json(settings) == newer
+
+
+def test_locate_returns_none_when_absent(tmp_path, monkeypatch):
+    from cfb_model.config import Settings
+    from cfb_model.data.sp_backfill import locate_scraped_json
+
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "nohome"))
+    settings = Settings(project_root=tmp_path / "empty", output_root=tmp_path / "empty" / "out")
+    assert locate_scraped_json(settings) is None
