@@ -287,6 +287,28 @@ def _cmd_snapshot_sp(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_import_sp_sheet(args: argparse.Namespace) -> int:
+    from cfb_model.config import get_settings
+    from cfb_model.data.sp_sheets import weekly_ratings
+    from cfb_model.data.store import Store
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+    try:
+        ratings = weekly_ratings(args.year, args.sheet_id)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    if not ratings:
+        print(f"No weekly ratings blocks found in the {args.year} sheet. Earlier seasons' "
+              "weekly tabs carry only game picks.", file=sys.stderr)
+        return 1
+    for week, frame in sorted(ratings.items()):
+        store.upsert_sp(args.year, week, frame)
+    print(f"Imported SP+ for {args.year} weeks {sorted(ratings)}")
+    return 0
+
+
 def _cmd_backfill_sp(args: argparse.Namespace) -> int:
     from cfb_model.api.client import CfbdClient
     from cfb_model.config import get_settings
@@ -369,6 +391,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--year", type=int, default=None)
     p.add_argument("--week", type=int, default=None)
     p.set_defaults(handler=_cmd_snapshot_sp)
+
+    p = sub.add_parser("import-sp-sheet",
+                       help="import weekly SP+ ratings from Connelly's public season "
+                            "spreadsheet (first-party; reaches week 0/1)")
+    p.add_argument("--year", type=int, required=True)
+    p.add_argument("--sheet-id", type=str, default=None)
+    p.set_defaults(handler=_cmd_import_sp_sheet)
 
     p = sub.add_parser("backfill-sp", help="fill weekly SP+ snapshots for a past season from Wayback captures")
     p.add_argument("--year", type=int, required=True)

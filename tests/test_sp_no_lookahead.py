@@ -38,23 +38,38 @@ def test_deadline_is_the_weeks_earliest_actual_kickoff():
     assert deadlines[2].month == 9
 
 
-def test_stored_2025_snapshots_predate_their_week():
-    """Every stored 2025 snapshot must match a capture taken before that
-    week's first kickoff. Verified against the real calendar."""
-    pytest.importorskip("requests")
+def test_stored_2025_snapshots_are_complete():
+    """Every stored 2025 snapshot must be a full FBS table.
+
+    Week 1 originally had to be left empty: the Wayback route could not reach
+    it, and filling it from a later capture would have leaked week-1 results.
+    Connelly's own season spreadsheet supplies it directly — its week-N tab
+    holds the ratings that week's picks were made from — so the week is now
+    populated from a source that is pre-kickoff by construction.
+    """
     store = Store(SETTINGS.db_path)
     weeks = store.sp_weeks(2025)
     if not weeks:
         pytest.skip("no 2025 SP+ snapshots stored")
 
-    # Week 1 has no honest capture (the ESPN article was first archived after
-    # week 1 kicked off), so it must be ABSENT rather than back-filled.
-    assert 1 not in weeks, "week 1 has no pre-kickoff capture and must not be populated"
-    assert len(weeks) >= 14
+    assert 1 in weeks, "week 1 should be filled from the first-party sheet"
+    assert len(weeks) >= 16
 
     for week in weeks:
         snap = store.load_sp(2025, week)
         assert len(snap) >= 120, f"week {week} snapshot is incomplete"
+
+
+def test_week_one_ratings_are_preseason():
+    """Week 1 must carry preseason ratings, not values that already know
+    week-1 results: they should differ materially from week 2's."""
+    store = Store(SETTINGS.db_path)
+    if 1 not in store.sp_weeks(2025) or 2 not in store.sp_weeks(2025):
+        pytest.skip("2025 weeks 1-2 not both present")
+    w1 = store.load_sp(2025, 1).set_index("Team")["Rating"]
+    w2 = store.load_sp(2025, 2).set_index("Team")["Rating"]
+    common = w1.index.intersection(w2.index)
+    assert (w1[common] - w2[common]).abs().mean() > 0.01
 
 
 def test_consecutive_snapshots_differ():
