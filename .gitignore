@@ -45,3 +45,7 @@ build/
 .ipynb_checkpoints/
 .DS_Store
 .claude/
+
+# node modules from one-off script testing
+node_modules/
+package-lock.json

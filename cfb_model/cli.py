@@ -309,6 +309,21 @@ def _cmd_import_sp_sheet(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_import_sp_json(args: argparse.Namespace) -> int:
+    from cfb_model.config import get_settings
+    from cfb_model.data.sp_backfill import import_scraped_json
+    from cfb_model.data.store import Store
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+    stored = import_scraped_json(store, args.file, args.year)
+    if not stored:
+        print("Nothing imported.", file=sys.stderr)
+        return 1
+    print(f"Imported weeks {sorted(stored)}")
+    return 0
+
+
 def _cmd_import_sp_html(args: argparse.Namespace) -> int:
     from cfb_model.config import get_settings
     from cfb_model.data.sp_backfill import import_saved_html
@@ -413,6 +428,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--sheet-id", type=str, default=None)
     p.set_defaults(handler=_cmd_import_sp_sheet)
+
+    p = sub.add_parser("import-sp-json",
+                       help="import SP+ ratings collected by scripts/espn_sp_scrape.js")
+    p.add_argument("--file", type=str, required=True)
+    p.add_argument("--year", type=int, default=None)
+    p.set_defaults(handler=_cmd_import_sp_json)
 
     p = sub.add_parser("import-sp-html",
                        help="import SP+ ratings from ESPN pages saved by hand (for seasons "

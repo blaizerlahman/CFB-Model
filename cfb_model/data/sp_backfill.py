@@ -283,3 +283,50 @@ def import_saved_html(store: Store, year: int, directory, log=print) -> dict[int
         log(f"  {path.name}: after week {article_week} -> stored as {year} week "
             f"{target_week} ({len(table)} teams)")
     return stored
+
+
+def import_scraped_json(store: Store, path, year: int | None = None, log=print) -> dict[int, int]:
+    """Import the JSON produced by scripts/espn_sp_scrape.js.
+
+    Each entry records the week its article reports on; the ratings were
+    computed once that week finished, so they are stored under the FOLLOWING
+    week — the first week they could actually have been bet on.
+
+    Team names arrive exactly as ESPN prints them and go through the same
+    normalisation as the Wayback path, so both routes land on identical keys.
+    """
+    import json
+    from pathlib import Path
+
+    payload = json.loads(Path(path).read_text())
+    year = year or payload.get("year")
+    if not year:
+        raise ValueError("No year in the file; pass --year explicitly.")
+
+    stored: dict[int, int] = {}
+    for entry in payload.get("articles", []):
+        if entry.get("error"):
+            log(f"  {entry['url']}: {entry['error']}")
+            continue
+        article_week = entry.get("week")
+        rows = entry.get("rows") or []
+        if article_week is None:
+            log(f"  {entry['url']}: no week identified, skipped")
+            continue
+        if len(rows) < 100:
+            log(f"  week {article_week}: only {len(rows)} teams — paywalled or partial, skipped")
+            continue
+
+        records = []
+        for row in rows:
+            name = str(row.get("team", "")).strip().rstrip(";").strip()
+            name = re.sub(r"\s+St\.$", " State", name)
+            name = ESPN_NAME_FIXES.get(name, name)
+            records.append({"Team": normalize_school(name), "Rating": float(row["rating"])})
+        table = pd.DataFrame(records).drop_duplicates(subset=["Team"])
+
+        target_week = article_week + 1
+        store.upsert_sp(year, target_week, table)
+        stored[target_week] = len(table)
+        log(f"  after week {article_week} -> {year} week {target_week} ({len(table)} teams)")
+    return stored
