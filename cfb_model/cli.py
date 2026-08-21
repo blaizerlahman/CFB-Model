@@ -125,7 +125,7 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
             print(f"No stored predictions for {year} week {args.week}.")
             return 1
         fbs, fcs = load_gated_frames(store)
-        results = grade_week(preds, store.load_bins(), fbs, set(fcs))
+        results = grade_week(preds, store.load_bin_set(settings.bin_set), fbs, set(fcs))
         if results.empty:
             print("No gradable games (are the week's results ingested?).")
             return 1
@@ -174,7 +174,7 @@ def _cmd_backtest(args: argparse.Namespace) -> int:
     settings = get_settings()
     exclude = ("SP",) if getattr(args, "no_sp", False) else ()
     label = "nosp" if exclude else ""
-    if args.bins != "legacy":
+    if args.bins != "leakfree":
         label = f"{label}_{args.bins}" if label else args.bins
     run_backtest(Store(settings.db_path), args.year, args.seed, settings,
                  exclude_features=exclude, label=label, bin_set=args.bins)
@@ -383,7 +383,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("backtest", help="replay a past season with as-of models")
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--seed", type=int, default=50)
-    p.add_argument("--bins", type=str, default="legacy",
+    p.add_argument("--bins", type=str, default="leakfree",
                    help="named bin set to grade with (default: legacy)")
     p.add_argument("--no-sp", action="store_true",
                    help="train and predict without SP+ features (historical SP+ rows carry "

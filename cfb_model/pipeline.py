@@ -360,7 +360,7 @@ def predict_run(store: Store, client: CfbdClient, year: int | None = None,
     features = feature_columns(next(iter(fbs.values())))
     preds, statuses = predict_week(models, fbs, features, skip_teams=skip)
 
-    bins = store.load_bins()
+    bins = store.load_bin_set(settings.bin_set)
     log(classification_report(preds, bins, fbs, fcs, statuses))
 
     if not preds.empty:

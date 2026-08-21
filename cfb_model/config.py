@@ -35,6 +35,11 @@ class Settings:
     legacy_sp_dir: Path = PROJECT_ROOT / "SP+ Data"
     legacy_talent_dir: Path = PROJECT_ROOT / "Talent Data"
 
+    # Calibration used when reporting/grading. 'legacy' is the original
+    # Bin_Data.csv, whose rates were computed from replays that leaked
+    # end-of-season SP+ and run as high as 100%.
+    bin_set: str = "leakfree"
+
     api_base_url: str = "https://api.collegefootballdata.com"
     _api_key: str | None = field(default=None, repr=False)
 

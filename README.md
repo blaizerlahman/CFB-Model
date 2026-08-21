@@ -141,8 +141,41 @@ Two compounding sources of leakage explain the gap between the old claim and rea
    — and the "great bet" tier from 63.9% to 50.5%.
 
 That second row is the useful lesson: the confidence tiers showed a large edge only while future
-information was leaking in. On clean data they are indistinguishable from coin flips, because the
-bins were themselves calibrated on leaked backtests.
+information was leaking in.
+
+### The tiers were recalibrated, and the result is worth stating plainly
+
+The success rates advertised for each tier came from `Bin Data/Bin_Data.csv`, built by replaying
+2018–2023 with season-final SP+. Those replays were rebuilt using only pre-kickoff information —
+6,673 graded games pooled from ten replays of 2024 and 2025 — keeping the original binning
+arithmetic and changing only which games feed it.
+
+Calibration improved a great deal. The legacy table contained bins claiming success rates as high
+as **100%**; the rebuilt table tops out at **62.7%**. Graded out-of-sample (each season scored with
+bins built from the other), the old table promised 57–58% overall and delivered 49–51%, while the
+rebuilt table promises 48–51% and delivers 48.8–51.1%. It now tells the truth.
+
+What recalibration could not do is make the tiers *work*. Sorting by how far the model departs from
+the spread does not find better bets:
+
+| \|prediction − spread\| | Games | Win rate |
+|---|---|---|
+| 0–1 | 392 | 49.0% |
+| 2–3 | 675 | 51.1% |
+| 4–6 | 1,051 | 53.3% |
+| 8–10 | 716 | 52.1% |
+| 10–14 | 877 | 47.1% |
+| 14+ | 701 | 46.6% |
+
+The correlation between disagreement size and winning is **−0.031** (n=6,600, z=−2.52) — flat, and
+if anything slightly inverted. The largest disagreements are the *worst* bets, which is intuitive
+once stated: a 20-point gap against an efficient line usually means the model has bad information
+about a team, not that it has found an edge.
+
+So the honest reading is that the tier system never had predictive power; it had leakage. The
+recalibrated table is the default (`bin_set` in `config.py`, or `--bins legacy` to compare), and it
+now reports what the model actually does, which is hover around break-even with no reliable way to
+pick out its better calls.
 
 The pipeline is verified faithful to the original model — a replay of week 15 of 2024 reproduces
 the saved predictions exactly, and regrading 2024 reproduces all 687 stored results. So these
