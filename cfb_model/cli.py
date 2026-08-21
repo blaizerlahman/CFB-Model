@@ -309,6 +309,21 @@ def _cmd_import_sp_sheet(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_import_sp_html(args: argparse.Namespace) -> int:
+    from cfb_model.config import get_settings
+    from cfb_model.data.sp_backfill import import_saved_html
+    from cfb_model.data.store import Store
+
+    settings = get_settings()
+    store = Store(settings.db_path)
+    stored = import_saved_html(store, args.year, args.dir)
+    if not stored:
+        print("Nothing imported.", file=sys.stderr)
+        return 1
+    print(f"Imported {args.year} weeks {sorted(stored)}")
+    return 0
+
+
 def _cmd_backfill_sp(args: argparse.Namespace) -> int:
     from cfb_model.api.client import CfbdClient
     from cfb_model.config import get_settings
@@ -398,6 +413,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--sheet-id", type=str, default=None)
     p.set_defaults(handler=_cmd_import_sp_sheet)
+
+    p = sub.add_parser("import-sp-html",
+                       help="import SP+ ratings from ESPN pages saved by hand (for seasons "
+                            "behind ESPN+, which blocks automated fetches)")
+    p.add_argument("--year", type=int, required=True)
+    p.add_argument("--dir", type=str, required=True)
+    p.set_defaults(handler=_cmd_import_sp_html)
 
     p = sub.add_parser("backfill-sp", help="fill weekly SP+ snapshots for a past season from Wayback captures")
     p.add_argument("--year", type=int, required=True)

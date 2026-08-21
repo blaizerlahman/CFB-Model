@@ -233,3 +233,53 @@ def backfill_sp(store: Store, year: int, game_records: list[dict],
             "Final-season ratings are deliberately NOT substituted."
         )
     return chosen
+
+
+# ---- manual import of saved ESPN pages -------------------------------------
+
+WEEK_FILE_RE = re.compile(r"week[\s_-]*(\d+)", re.I)
+
+
+def import_saved_html(store: Store, year: int, directory, log=print) -> dict[int, int]:
+    """Import SP+ ratings from ESPN pages saved by hand.
+
+    ESPN's 2019-2023 weekly rankings sit behind ESPN+ and the site refuses
+    server-side fetches outright (HTTP 202, empty body), so those seasons can
+    only be collected by a signed-in human saving each page. This reads that
+    folder.
+
+    Files are keyed by the week in their NAME, which is the week the article
+    reports on ("after Week 5" -> week5.html). Those ratings were computed
+    once week 5 finished, so they are the ones in hand for week 6 and are
+    stored under week 6 — storing them under week 5 would leak week-5 results
+    into week-5 predictions. Preseason (week0.html) therefore lands on week 1.
+
+    Returns {stored_week: team_count}.
+    """
+    from pathlib import Path
+
+    directory = Path(directory)
+    stored: dict[int, int] = {}
+    files = sorted(p for p in directory.glob("*.htm*"))
+    if not files:
+        log(f"No .html files in {directory}")
+        return stored
+
+    for path in files:
+        match = WEEK_FILE_RE.search(path.stem)
+        if not match:
+            log(f"  {path.name}: no week number in the filename, skipped")
+            continue
+        article_week = int(match.group(1))
+        target_week = article_week + 1
+
+        table = parse_sp_table(path.read_text(errors="replace"))
+        if len(table) < 100:
+            log(f"  {path.name}: only {len(table)} teams parsed — is the page fully "
+                "loaded and signed in? skipped")
+            continue
+        store.upsert_sp(year, target_week, table)
+        stored[target_week] = len(table)
+        log(f"  {path.name}: after week {article_week} -> stored as {year} week "
+            f"{target_week} ({len(table)} teams)")
+    return stored
