@@ -432,7 +432,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--year", type=int, required=True)
     p.add_argument("--seed", type=int, default=50)
     p.add_argument("--bins", type=str, default="leakfree",
-                   help="named bin set to grade with (default: legacy)")
+                   help="calibration to grade with: leakfree (default) or legacy")
     p.add_argument("--no-sp", action="store_true",
                    help="train and predict without SP+ features (historical SP+ rows carry "
                         "the season-final rating, which leaks end-of-season information)")

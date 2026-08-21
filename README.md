@@ -37,32 +37,68 @@ python -m cfb_model setup-season --year 2026
 
 ## Commands
 
+Everything runs as `python -m cfb_model <command>`. All commands are
+non-interactive, take a lockfile so overlapping runs no-op, and exit 0 on success
+(including "nothing to do today").
+
+### In-season, week to week
+
 | Command | What it does |
 |---|---|
-| `predict [--year Y --week W --day tue]` | The daily driver. Auto-detects week, catches up on missing ingests, predicts the upcoming slate, prints the tiered report, writes predictions to the DB and a CSV. |
-| `update [--year Y --week W]` | Ingests finished weeks only: box scores, betting lines, rolling features, talent/SP+. Idempotent. |
-| `analyze [--year Y] [--week W]` | Grades a week (`--week`) or rolls up a season: overall/good/great/best win rates, day-of-week splits, since-week-N trends, big-spread slice. |
-| `setup-season --year Y` | Backfills team histories via the API and retrains + saves every qualifying team model for season Y. |
-| `backtest --year Y [--seed 50]` | Replays a past season week by week with as-of models and that week's real lines and SP+ ratings. |
-| `backfill-sp --year Y` | Reconstructs true weekly SP+ snapshots for a past season (see below). |
-| `matchup TEAM1 TEAM2 [--spread X]` | On-demand prediction for any two teams. |
-| `migrate [--validate-only]` | One-time load of the legacy CSVs into SQLite, with a validation gate. |
+| `predict [--year Y --week W --day tue]` | The daily driver. Works out the current week, ingests any finished week it is missing, fetches the slate's lines and SP+, predicts every game, prints the picks by tier, and writes them to the database and a CSV. Defaults are almost always right — run it bare. |
+| `update [--year Y --week W]` | Ingest only: a finished week's box scores, betting lines, rolling features, talent and SP+. `predict` calls this for you; run it directly to backfill a gap. Idempotent. |
+| `snapshot-sp [--year Y --week W]` | Record this week's SP+ ratings. Worth its own weekly cron entry — CFBD serves SP+ live and freezes it afterwards, so a week not captured while current is gone for good. First capture of a week wins. |
+| `analyze [--year Y] [--week W]` | With `--week`, grades that week and writes a results CSV. Without it, rolls up the season: overall and per-tier records, day-of-week splits, since-week-N trends, and a big-spread slice. |
 
-`--analyze` also works as a bare flag (`python -m cfb_model --analyze`).
-
-### Running on a schedule
-
-Every command is non-interactive, reads its key from the environment, exits 0 on success
-(including "no slate today"), and takes a lockfile so overlapping runs no-op. A daily crontab
-entry is just:
+A daily crontab line is just:
 
 ```bash
 cd "/path/to/CFB Model" && .venv/bin/python -m cfb_model predict
 ```
 
-Running daily during the season is intentional: lines move, each day's run is stored under its
-own day tag, and grading keeps the most confident version of each game while the day-of-week
-report shows which day's lines actually paid.
+### Once per season
+
+| Command | What it does |
+|---|---|
+| `setup-season --year Y` | Backfills missing team histories via the API and retrains every qualifying team model for season Y. Run before the season, and again after any change to past training data. Takes ~6 minutes. |
+| `migrate [--validate-only]` | One-time load of the legacy CSVs into SQLite, with a validation gate. Already done; re-run to rebuild the store from the original files. |
+
+### Evaluating the model
+
+| Command | What it does |
+|---|---|
+| `backtest --year Y [--seed 50] [--bins NAME] [--no-sp]` | Replays a past season week by week using models trained only on earlier seasons and the ratings that were public before each week's games. `--bins legacy` grades with the original calibration for comparison; `--no-sp` trains without SP+ features. |
+| `rebuild-bins [--seasons 2024,2025] [--reps 5] [--name leakfree]` | Recalibrates the spread-differential success table from leak-free replays. Only seasons with genuine weekly SP+ qualify. Slow (hours): each rep retrains every team model. `--from-replays FILE` rebuilds from an existing pooled run instead. |
+
+### Getting weekly SP+ for past seasons
+
+Ratings for a finished season can only be recovered if something recorded them
+at the time. In rough order of preference:
+
+| Command | Source |
+|---|---|
+| `import-sp-sheet --year Y` | Connelly's public season spreadsheet. First-party and reaches week 0/1. Only 2025's sheet carries weekly ratings; earlier ones hold picks alone. |
+| `backfill-sp --year Y` | Wayback captures of ESPN's living article, one per week, each verified to predate that week's first kickoff. |
+| `import-sp-json [--file F]` | Output of `scripts/espn_sp_scrape.js`, which you run in a signed-in browser console because ESPN blocks server-side fetches. Finds the file on its own in `output/sp_manual`, the project root, or `~/Downloads`. |
+| `import-sp-html --year Y --dir D` | ESPN pages saved by hand, named `week5.html` and so on. |
+| **`apply-weekly-sp --year Y`** | **Run this after any of the above.** Importing only fills the ratings table; the model reads SP+ off each game row, and this is what moves it across. Skipping it means the import silently changes nothing. |
+
+### On demand
+
+| Command | What it does |
+|---|---|
+| `matchup TEAM1 TEAM2 [--spread X] [--season Y]` | Predicts any two teams from current data. `--spread` is from TEAM1's perspective (negative means TEAM1 favoured) and adds the cover call and tier. These are logged separately and never enter success analysis. |
+
+### A worked example
+
+Recovering a past season's weekly ratings, end to end:
+
+```bash
+python -m cfb_model import-sp-json                  # or backfill-sp / import-sp-sheet
+python -m cfb_model apply-weekly-sp --year 2023     # the step that makes it count
+python -m cfb_model setup-season --year 2026        # retrain on the corrected data
+python -m cfb_model backtest --year 2025            # check whether it changed anything
+```
 
 ## API usage
 
