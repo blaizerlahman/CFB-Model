@@ -56,9 +56,11 @@ A daily crontab line is just:
 cd "/path/to/CFB Model" && .venv/bin/python -m cfb_model predict
 ```
 
-A full weekly schedule lives in `scripts/crontab.txt` — predictions daily,
-an SP+ snapshot every Tuesday night, and grading every Sunday afternoon.
-Install it with:
+A full weekly schedule lives in `scripts/crontab.txt` — predictions daily at
+4 PM Central, an SP+ snapshot Tuesdays at 9 PM Central, and grading Sundays at
+2 PM Central. cron fires on the machine's local clock rather than a timezone
+of its own, so those lines are written in local time; the file records the
+conversion it used. Install it with:
 
 ```bash
 crontab scripts/crontab.txt

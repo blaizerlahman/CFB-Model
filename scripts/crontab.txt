@@ -3,16 +3,25 @@ HOME=/Users/blaizelahman
 
 
 
-# --- CFB model (added 2026-08-21) ---------------------------------------
-# Machine runs on America/New_York, so these times are Eastern.
-# Predictions, every day at 4:00 PM. Each run stores its own day tag with the
-# line that was live at the time, so line movement is captured day by day.
-0 16 * * * cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model predict >> logs/cron_predict.log 2>&1
+# --- CFB model ----------------------------------------------------------
+# All three times below are CENTRAL, as requested.
+#
+# cron has no timezone of its own: it fires on the machine's local clock,
+# which is America/New_York. Central runs exactly one hour behind Eastern and
+# the two shift together through daylight saving, so every Central time is
+# written here as Central + 1 hour. If this machine's timezone ever changes,
+# these lines need revisiting.
 
-# SP+ snapshot, Tuesdays at 10:00 PM Eastern = 9:00 PM Central. SP+ is served
-# live and frozen once a season ends, so a week not captured now is lost.
+# Predictions - 4:00 PM Central (5:00 PM Eastern), every day.
+# Each run records its own day tag against the line that was live at the time,
+# so line movement through the week is preserved.
+0 17 * * * cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model predict >> logs/cron_predict.log 2>&1
+
+# SP+ snapshot - 9:00 PM Central (10:00 PM Eastern), Tuesdays.
+# SP+ is served live and frozen once a season ends, so a week not captured
+# while it is current cannot be recovered afterwards.
 0 22 * * 2 cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model snapshot-sp >> logs/cron_snapshot.log 2>&1
 
-# Grade the week just finished, Sundays at 2:00 PM: ingest its results first,
-# then score the predictions against them.
-0 14 * * 0 cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model update --current >> logs/cron_analyze.log 2>&1 && .venv/bin/python -m cfb_model analyze --last-week >> logs/cron_analyze.log 2>&1
+# Grade the week just finished - 2:00 PM Central (3:00 PM Eastern), Sundays.
+# Pull in that week's results first, then score the predictions against them.
+0 15 * * 0 cd "/Users/blaizelahman/Development/techprojects/CFB Model" && .venv/bin/python -m cfb_model update --current >> logs/cron_analyze.log 2>&1 && .venv/bin/python -m cfb_model analyze --last-week >> logs/cron_analyze.log 2>&1
