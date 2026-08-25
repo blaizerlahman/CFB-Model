@@ -191,8 +191,11 @@ def _cmd_backtest(args: argparse.Namespace) -> int:
     label = "nosp" if exclude else ""
     if args.bins != "leakfree":
         label = f"{label}_{args.bins}" if label else args.bins
+    if getattr(args, "both_sides", False):
+        label = f"{label}_bothsides" if label else "bothsides"
     run_backtest(Store(settings.db_path), args.year, args.seed, settings,
-                 exclude_features=exclude, label=label, bin_set=args.bins)
+                 exclude_features=exclude, label=label, bin_set=args.bins,
+                 average_sides=getattr(args, "both_sides", False))
     return 0
 
 
@@ -454,6 +457,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--seed", type=int, default=50)
     p.add_argument("--bins", type=str, default="leakfree",
                    help="calibration to grade with: leakfree (default) or legacy")
+    p.add_argument("--both-sides", action="store_true",
+                   help="predict each game from both teams' models and average them, "
+                        "instead of using only the alphabetically-first team's")
     p.add_argument("--no-sp", action="store_true",
                    help="train and predict without SP+ features (historical SP+ rows carry "
                         "the season-final rating, which leaks end-of-season information)")

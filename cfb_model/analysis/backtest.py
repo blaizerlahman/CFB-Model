@@ -56,7 +56,8 @@ def preferred_lines_for(store: Store, fbs_full: dict, year: int, week: int) -> p
 def run_backtest(store: Store, year: int, random_state: int = 50,
                  settings: Settings | None = None, log=print,
                  exclude_features: tuple[str, ...] = (),
-                 label: str = "", bin_set: str = "legacy") -> pd.DataFrame:
+                 label: str = "", bin_set: str = "legacy",
+                 average_sides: bool = False) -> pd.DataFrame:
     settings = settings or get_settings()
     out_dir = settings.output_root / "backtests" / str(year)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -114,7 +115,8 @@ def run_backtest(store: Store, year: int, random_state: int = 50,
         import warnings
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            preds, _ = predict_week(models, fbs, features, skip_teams=skip)
+            preds, _ = predict_week(models, fbs, features, skip_teams=skip,
+                                    average_sides=average_sides)
         if preds.empty:
             continue
         preds = preds.copy()

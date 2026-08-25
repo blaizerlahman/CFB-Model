@@ -210,11 +210,37 @@ def _seed_week_one(fbs: dict[str, pd.DataFrame], fcs: dict[str, pd.DataFrame],
             frames[team] = df
 
 
+
+def upcoming_rows(frame: pd.DataFrame) -> list:
+    """Every not-yet-played row in a team's frame, newest last.
+
+    A team can hold more than one: CFBD's week 1 spans ten days, so a side
+    opening in week 0 and again the next weekend has both games filed under
+    week 1. Taking only the last row would drop the earlier game.
+    """
+    sentinel = frame["School"].isna()
+    return [frame.index[i] for i, flag in enumerate(sentinel) if flag]
+
+
+def games_by_id(frames: dict) -> dict:
+    """{game id: {team: row}} across every upcoming row in every frame."""
+    games: dict = {}
+    for team, frame in frames.items():
+        for idx in upcoming_rows(frame):
+            row = frame.loc[idx]
+            game_id = row.get("Id")
+            if pd.isna(game_id):
+                continue
+            games.setdefault(game_id, {})[team] = row
+    return games
+
+
 def predict_week(
     model_dict: dict,
     fbs_frames: dict[str, pd.DataFrame],
     features: list[str] | None = None,
     skip_teams: set[str] | frozenset[str] = frozenset(),
+    average_sides: bool = False,
 ) -> tuple[pd.DataFrame, dict[str, str]]:
     """Exact port of predictUpcomingWeek + savePredictions.
 
@@ -225,6 +251,9 @@ def predict_week(
     (the notebook compared a boolean against the list, so only the opponent
     check ever fired). LEGACY-FIX (bug 4): no hardcoded Baylor exception.
     """
+    if average_sides:
+        return _predict_week_paired(model_dict, fbs_frames, features, skip_teams)
+
     statuses: dict[str, str] = {}
     rows: list[list] = []
 
@@ -269,6 +298,60 @@ def predict_week(
 
     preds = pd.DataFrame(rows, columns=list(PREDS_COLUMNS))
     return preds, statuses
+
+
+def _predict_week_paired(
+    model_dict: dict,
+    fbs_frames: dict[str, pd.DataFrame],
+    features: list[str] | None,
+    skip_teams: set[str] | frozenset[str],
+) -> tuple[pd.DataFrame, dict[str, str]]:
+    """Predict each game once, from both teams' models where possible.
+
+    Every team has its own model, but the default path consults only one of
+    them per game — whichever team sorts first — and throws the other away.
+    Here both are asked and their answers averaged, which should cancel some
+    of the noise a single team's model carries.
+
+    Games are keyed by id rather than by each frame's last row, so a team
+    playing twice in one week has both games predicted.
+    """
+    statuses: dict[str, str] = {}
+    rows: list[list] = []
+    games = games_by_id(fbs_frames)
+
+    for game_id, sides in sorted(games.items(), key=lambda kv: sorted(kv[1])[0]):
+        modelled = [t for t in sorted(sides) if t in model_dict]
+        if not modelled:
+            continue
+        owner = modelled[0]
+        row = sides[owner]
+        opp = row["AwayTeam"] if row["HomeTeam"] == owner else row["HomeTeam"]
+
+        if owner in skip_teams or opp in skip_teams:
+            statuses[owner] = "Playing team with incomplete data"
+            continue
+        if features is None:
+            features = feature_columns(fbs_frames[owner])
+
+        preds = []
+        for team in modelled:
+            side_row = sides[team]
+            value = model_dict[team].predict(side_row[features].to_frame().T)[0]
+            # Each model speaks from its own side; flip the opponent's.
+            preds.append(value if team == owner else -value)
+
+        pred = round(sum(preds) / len(preds) * 2) / 2
+        spread = row["Spread"]
+        spread_diff = pred - spread
+        cover = (float("nan") if pd.isna(spread_diff)
+                 else -1 if spread_diff < 0 else 1 if spread_diff > 0 else 0)
+        rows.append([pred, spread, spread_diff, cover, game_id, owner, opp])
+        if len(modelled) == 1:
+            statuses[owner] = "Only one side modelled; used it alone"
+
+    preds_frame = pd.DataFrame(rows, columns=list(PREDS_COLUMNS))
+    return preds_frame, statuses
 
 
 def predict_matchup(
