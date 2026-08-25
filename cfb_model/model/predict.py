@@ -53,19 +53,20 @@ def build_upcoming_frames(
 
     fcs_away_opponents: set[str] = set()
 
-    # --- sentinel rows ---
+    # --- collect the upcoming rows for each team ---
+    # A team can have more than one: CFBD's week 1 covers roughly ten days, so
+    # a side opening in week 0 and again the next weekend has both games filed
+    # under week 1.
+    pending: dict[str, list[pd.DataFrame]] = {}
     for _, row in preferred_lines.iterrows():
         row_df = pd.DataFrame([row])
-
         home, away = row["HomeTeam"], row["AwayTeam"]
-
         for name, is_home in ((home, True), (away, False)):
             if name in fbs:
-                target = fbs
+                pass
             elif name in fcs:
                 # LEGACY-FIX (bug 3): away-FCS frames were stored into
                 # teamDict; here every FCS frame stays in the FCS dict.
-                target = fcs
                 if not is_home:
                     fcs_away_opponents.add(name)
             else:
@@ -75,74 +76,39 @@ def build_upcoming_frames(
                 sentinel.iloc[0, sentinel.columns.get_loc("Spread")] = (
                     float(sentinel.iloc[0, sentinel.columns.get_loc("Spread")]) * -1
                 )
-            frame = pd.concat([target[name], sentinel], ignore_index=True)
-            target[name] = frame.reset_index(drop=True)
+            pending.setdefault(name, []).append(sentinel)
 
     sample = next(iter(fbs.values()))
     rolling_cols = own_rolling_columns(sample)
 
-    # --- own rolling sums on sentinel rows ---
+    # --- append each upcoming row with its own rolling sums ---
+    # Each is computed against the played games alone, so a second upcoming row
+    # sees the same trailing window as the first rather than counting the
+    # other one as a game.
     for frames in (fbs, fcs):
-        for team, df in frames.items():
-            if pd.isna(df.iloc[-1]["School"]) == False:  # noqa: E712 (verbatim)
+        for team, sentinels in pending.items():
+            if team not in frames:
                 continue
-            frames[team] = update_last_row_rolling(df, rolling_cols)
+            played = frames[team]
+            filled = []
+            for sentinel in sentinels:
+                temp = pd.concat([played, sentinel], ignore_index=True)
+                temp = update_last_row_rolling(temp, rolling_cols)
+                filled.append(temp.iloc[[-1]])
+            frames[team] = pd.concat([played, *filled], ignore_index=True)
 
-    # --- _opp rolling + own talent/SP (FBS frames with a sentinel only) ---
-    # Verbatim control flow: work on a copy; if the talent or SP lookup comes
-    # up empty the copy is DISCARDED (the _opp fill is lost too). That is the
-    # notebook's behavior and it affects predictions, so it is preserved.
+    # --- _opp rolling + own talent/SP, for every upcoming row ---
+    # Verbatim control flow, applied per row: the fills are staged and only
+    # committed once the talent AND SP lookups succeed. When either comes up
+    # empty the notebook discarded its working copy, losing the _opp fill too,
+    # and that shows up in predictions, so it is preserved.
     for team in list(fbs):
-        if pd.isna(fbs[team].iloc[-1]["School"]) == False:  # noqa: E712
-            continue
-
         df = fbs[team].copy()
-        last_index = df.index[-1]
-        last_row = df.iloc[-1]
-        game_id = last_row["Id"]
-        opp_name = last_row["AwayTeam"] if team == last_row["HomeTeam"] else last_row["HomeTeam"]
-
-        if opp_name in fbs:
-            opp_df = fbs[opp_name]
-        elif opp_name in fcs:
-            opp_df = fcs[opp_name]
-        else:
-            continue
-
-        opp_row = opp_df[opp_df["Id"] == game_id]
-        if not opp_row.empty:
-            for col in rolling_cols:
-                df.loc[last_index, col + "_opp"] = opp_row.iloc[0][col]
-
-        if week == 1:
-            fbs[team] = df
-            continue
-
-        team_talent = talent.loc[talent["School"] == team, "Talent"]
-        if len(team_talent.values) == 0:
-            continue  # verbatim: copy (incl. _opp fill) discarded
-        df.loc[last_index, "talent"] = team_talent.values[0]
-
-        team_sp = sp.loc[sp["Team"] == team, "Rating"]
-        if len(team_sp.values) == 0:
-            continue  # verbatim: copy discarded
-        df.loc[last_index, "SP"] = team_sp.values[0]
-
-        fbs[team] = df
-
-    # --- opponent talent/SP on sentinel rows ---
-    # (The notebook loop also touched non-playing teams' last real rows; that
-    # mutation never influenced predictions or persisted state, so only
-    # sentinel rows are processed here.)
-    if week != 1:
-        for team in list(fbs):
-            df = fbs[team]
-            if pd.isna(df.iloc[-1]["School"]) == False:  # noqa: E712
-                continue
-            df = df.copy()
-            last_index = df.index[-1]
-            last_row = df.iloc[-1]
-            opp_name = last_row["AwayTeam"] if team == last_row["HomeTeam"] else last_row["HomeTeam"]
+        changed = False
+        for idx in upcoming_rows(df):
+            row = df.loc[idx]
+            game_id = row["Id"]
+            opp_name = row["AwayTeam"] if team == row["HomeTeam"] else row["HomeTeam"]
 
             if opp_name in fbs:
                 opp_df = fbs[opp_name]
@@ -151,23 +117,67 @@ def build_upcoming_frames(
             else:
                 continue
 
-            if opp_name in fbs or opp_name in fcs_away_opponents:
-                # FBS opponents always; FCS opponents only when they are the
-                # away team — replicating the notebook, where the away-FCS
-                # frame sat in teamDict and took the numeric-Year branch while
-                # home-FCS frames hit a str(year) comparison that never
-                # matched (talent_opp stayed NaN for those).
-                filtered = opp_df[opp_df["Year"] == year]
-                if filtered.empty:
-                    continue
-                opp_first = filtered.iloc[0]
-                df.loc[last_index, "talent_opp"] = opp_first.get("talent", pd.NA)
+            staged: dict[str, object] = {}
+            opp_row = opp_df[opp_df["Id"] == game_id]
+            if not opp_row.empty:
+                for col in rolling_cols:
+                    staged[col + "_opp"] = opp_row.iloc[0][col]
 
-            opp_sp = sp[sp["Team"] == opp_name]
-            if not opp_sp.empty:
-                df.loc[last_index, "SP_opp"] = opp_sp.iloc[0]["Rating"]
+            if week == 1:
+                for col, value in staged.items():
+                    df.loc[idx, col] = value
+                changed = changed or bool(staged)
+                continue
 
+            team_talent = talent.loc[talent["School"] == team, "Talent"]
+            if len(team_talent.values) == 0:
+                continue  # verbatim: the row's staged fills are discarded
+            team_sp = sp.loc[sp["Team"] == team, "Rating"]
+            if len(team_sp.values) == 0:
+                continue  # verbatim: discarded
+
+            staged["talent"] = team_talent.values[0]
+            staged["SP"] = team_sp.values[0]
+            for col, value in staged.items():
+                df.loc[idx, col] = value
+            changed = True
+        if changed:
             fbs[team] = df
+
+    # --- opponent talent/SP, for every upcoming row ---
+    if week != 1:
+        for team in list(fbs):
+            df = fbs[team].copy()
+            changed = False
+            for idx in upcoming_rows(df):
+                row = df.loc[idx]
+                opp_name = row["AwayTeam"] if team == row["HomeTeam"] else row["HomeTeam"]
+
+                if opp_name in fbs:
+                    opp_df = fbs[opp_name]
+                elif opp_name in fcs:
+                    opp_df = fcs[opp_name]
+                else:
+                    continue
+
+                if opp_name in fbs or opp_name in fcs_away_opponents:
+                    # FBS opponents always; FCS opponents only when they are the
+                    # away team — replicating the notebook, where the away-FCS
+                    # frame sat in teamDict and took the numeric-Year branch
+                    # while home-FCS frames hit a str(year) comparison that
+                    # never matched (talent_opp stayed NaN for those).
+                    filtered = opp_df[opp_df["Year"] == year]
+                    if filtered.empty:
+                        continue
+                    df.loc[idx, "talent_opp"] = filtered.iloc[0].get("talent", pd.NA)
+                    changed = True
+
+                opp_sp = sp[sp["Team"] == opp_name]
+                if not opp_sp.empty:
+                    df.loc[idx, "SP_opp"] = opp_sp.iloc[0]["Rating"]
+                    changed = True
+            if changed:
+                fbs[team] = df
 
     if week == 1:
         _seed_week_one(fbs, fcs, sp, talent, year)
@@ -177,38 +187,42 @@ def build_upcoming_frames(
 
 def _seed_week_one(fbs: dict[str, pd.DataFrame], fcs: dict[str, pd.DataFrame],
                    sp: pd.DataFrame, talent: pd.DataFrame, year: int) -> None:
-    """grabUpcomingYearTalent + grabUpcomingYearSP, sentinel rows only:
+    """grabUpcomingYearTalent + grabUpcomingYearSP, upcoming rows only:
     the new season's talent/SP (and the opponents') come straight from the
-    ratings tables rather than from prior rows."""
+    ratings tables rather than from prior rows.
+
+    Week 1 is exactly where a team can hold two upcoming rows, so every one of
+    them is seeded rather than only the last.
+    """
     for frames in (fbs, fcs):
         for team in list(frames):
             df = frames[team]
-            if pd.isna(df.iloc[-1]["School"]) == False:  # noqa: E712
+            rows = upcoming_rows(df)
+            if not rows:
                 continue
             df = df.copy()
-            last_index = df.index[-1]
-            df.loc[last_index, "Year"] = year
+            for idx in rows:
+                df.loc[idx, "Year"] = year
 
-            team_talent = talent.loc[talent["School"] == team, "Talent"]
-            if len(team_talent.values):
-                df.loc[last_index, "talent"] = team_talent.values[0]
+                team_talent = talent.loc[talent["School"] == team, "Talent"]
+                if len(team_talent.values):
+                    df.loc[idx, "talent"] = team_talent.values[0]
 
-            if frames is fbs:
-                team_sp = sp.loc[sp["Team"] == team, "Rating"]
-                if len(team_sp.values):
-                    df.loc[last_index, "SP"] = team_sp.values[0]
+                if frames is fbs:
+                    team_sp = sp.loc[sp["Team"] == team, "Rating"]
+                    if len(team_sp.values):
+                        df.loc[idx, "SP"] = team_sp.values[0]
 
-                last_row = df.iloc[-1]
-                opp_name = last_row["AwayTeam"] if team == last_row["HomeTeam"] else last_row["HomeTeam"]
-                opp_talent = talent[talent["School"] == opp_name]
-                if not opp_talent.empty:
-                    df.loc[last_index, "talent_opp"] = opp_talent.iloc[0]["Talent"]
-                opp_sp = sp[sp["Team"] == opp_name]
-                if not opp_sp.empty:
-                    df.loc[last_index, "SP_opp"] = opp_sp.iloc[0]["Rating"]
+                    row = df.loc[idx]
+                    opp_name = row["AwayTeam"] if team == row["HomeTeam"] else row["HomeTeam"]
+                    opp_talent = talent[talent["School"] == opp_name]
+                    if not opp_talent.empty:
+                        df.loc[idx, "talent_opp"] = opp_talent.iloc[0]["Talent"]
+                    opp_sp = sp[sp["Team"] == opp_name]
+                    if not opp_sp.empty:
+                        df.loc[idx, "SP_opp"] = opp_sp.iloc[0]["Rating"]
 
             frames[team] = df
-
 
 
 def upcoming_rows(frame: pd.DataFrame) -> list:
@@ -251,107 +265,54 @@ def predict_week(
     (the notebook compared a boolean against the list, so only the opponent
     check ever fired). LEGACY-FIX (bug 4): no hardcoded Baylor exception.
     """
-    if average_sides:
-        return _predict_week_paired(model_dict, fbs_frames, features, skip_teams)
-
-    statuses: dict[str, str] = {}
-    rows: list[list] = []
-
-    sorted_models = {key: model_dict[key] for key in sorted(model_dict)}
-
-    for team, model in sorted_models.items():
-        frame = fbs_frames[team]
-        last = frame.iloc[-1]
-
-        if pd.isna(last["School"]) == False:  # noqa: E712 (verbatim)
-            statuses[team] = "No game this week"
-            continue
-
-        is_home = last["HomeTeam"] == team
-        opp_team = last["AwayTeam"] if is_home else last["HomeTeam"]
-
-        if opp_team < team and opp_team in sorted_models:
-            statuses[team] = f"Already predicted by {opp_team}"
-            continue
-
-        if features is None:
-            features = feature_columns(frame)
-
-        X = last[features].to_frame().T
-        pred = model.predict(X)
-        pred = round(pred[0] * 2) / 2  # built-in round, verbatim
-
-        spread = last["Spread"]
-        spread_diff = pred - spread
-        game_id = last["Id"]
-
-        if team in skip_teams or opp_team in skip_teams:
-            statuses[team] = "Playing team with incomplete data"
-            continue
-
-        if pd.isna(spread_diff):
-            cover = float("nan")
-        else:
-            cover = -1 if spread_diff < 0 else 1 if spread_diff > 0 else 0
-
-        rows.append([pred, spread, spread_diff, cover, game_id, team, opp_team])
-
-    preds = pd.DataFrame(rows, columns=list(PREDS_COLUMNS))
-    return preds, statuses
-
-
-def _predict_week_paired(
-    model_dict: dict,
-    fbs_frames: dict[str, pd.DataFrame],
-    features: list[str] | None,
-    skip_teams: set[str] | frozenset[str],
-) -> tuple[pd.DataFrame, dict[str, str]]:
-    """Predict each game once, from both teams' models where possible.
-
-    Every team has its own model, but the default path consults only one of
-    them per game — whichever team sorts first — and throws the other away.
-    Here both are asked and their answers averaged, which should cancel some
-    of the noise a single team's model carries.
-
-    Games are keyed by id rather than by each frame's last row, so a team
-    playing twice in one week has both games predicted.
-    """
     statuses: dict[str, str] = {}
     rows: list[list] = []
     games = games_by_id(fbs_frames)
 
-    for game_id, sides in sorted(games.items(), key=lambda kv: sorted(kv[1])[0]):
+    for team in sorted(model_dict):
+        frame = fbs_frames.get(team)
+        if frame is None or not upcoming_rows(frame):
+            statuses[team] = "No game this week"
+
+    # Keyed by game rather than by each team's last row, so a side playing
+    # twice in one week gets both games predicted instead of just the later.
+    for game_id, sides in sorted(games.items(), key=lambda kv: (sorted(kv[1])[0], kv[0])):
         modelled = [t for t in sorted(sides) if t in model_dict]
         if not modelled:
             continue
         owner = modelled[0]
         row = sides[owner]
-        opp = row["AwayTeam"] if row["HomeTeam"] == owner else row["HomeTeam"]
+        opp_team = row["AwayTeam"] if row["HomeTeam"] == owner else row["HomeTeam"]
 
-        if owner in skip_teams or opp in skip_teams:
+        # Alphabetically-first modelled side owns the game, as before.
+        for other in modelled[1:]:
+            statuses[other] = f"Already predicted by {owner}"
+
+        if owner in skip_teams or opp_team in skip_teams:
             statuses[owner] = "Playing team with incomplete data"
             continue
+
         if features is None:
             features = feature_columns(fbs_frames[owner])
 
-        preds = []
-        for team in modelled:
-            side_row = sides[team]
-            value = model_dict[team].predict(side_row[features].to_frame().T)[0]
-            # Each model speaks from its own side; flip the opponent's.
-            preds.append(value if team == owner else -value)
+        if average_sides and len(modelled) > 1:
+            values = []
+            for team in modelled:
+                value = model_dict[team].predict(sides[team][features].to_frame().T)[0]
+                values.append(value if team == owner else -value)
+            pred = round(sum(values) / len(values) * 2) / 2
+        else:
+            pred = model_dict[owner].predict(row[features].to_frame().T)
+            pred = round(pred[0] * 2) / 2  # builtin round, verbatim
 
-        pred = round(sum(preds) / len(preds) * 2) / 2
         spread = row["Spread"]
         spread_diff = pred - spread
         cover = (float("nan") if pd.isna(spread_diff)
                  else -1 if spread_diff < 0 else 1 if spread_diff > 0 else 0)
-        rows.append([pred, spread, spread_diff, cover, game_id, owner, opp])
-        if len(modelled) == 1:
-            statuses[owner] = "Only one side modelled; used it alone"
+        rows.append([pred, spread, spread_diff, cover, game_id, owner, opp_team])
 
-    preds_frame = pd.DataFrame(rows, columns=list(PREDS_COLUMNS))
-    return preds_frame, statuses
+    preds = pd.DataFrame(rows, columns=list(PREDS_COLUMNS))
+    return preds, statuses
 
 
 def predict_matchup(
