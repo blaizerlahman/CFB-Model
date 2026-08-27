@@ -358,7 +358,8 @@ def predict_run(store: Store, client: CfbdClient, year: int | None = None,
 
     skip = derived_skip_teams(line_records, models)
     features = feature_columns(next(iter(fbs.values())))
-    preds, statuses = predict_week(models, fbs, features, skip_teams=skip)
+    preds, statuses = predict_week(models, fbs, features, skip_teams=skip,
+                                   average_sides=settings.average_sides)
 
     bins = store.load_bin_set(settings.bin_set)
     log(classification_report(preds, bins, fbs, fcs, statuses))

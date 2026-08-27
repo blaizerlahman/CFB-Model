@@ -115,6 +115,10 @@ GRIDSEARCH_SCORING = "neg_mean_absolute_error"
 SINCE_WEEK_RANGE = 14      # 'win rate since week N' for N in range(14)
 BIG_SPREAD = 27.5          # |spread| >= this slice
 
-# Prediction/results CSV column orders (legacy-exact).
-PREDS_COLUMNS = ("pred", "spread", "spreadDiff", "cover", "gameID", "team", "oppTeam")
+# Prediction/results CSV column orders. The first seven are the legacy set and
+# are what grading reads; `pick`/`pickSpread` state the same call as a game —
+# which side to back and the line it has to cover, quoted the way a book does
+# (favourite negative), rather than "team X covers / does not cover".
+PREDS_COLUMNS = ("pred", "spread", "spreadDiff", "cover", "gameID", "team", "oppTeam",
+                 "pick", "pickSpread")
 RESULTS_COLUMNS = PREDS_COLUMNS + ("day", "scoreDiff", "result", "successRate")

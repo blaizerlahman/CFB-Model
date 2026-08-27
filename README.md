@@ -151,8 +151,13 @@ Missing statistics get special handling: CFBD did not track some categories in o
 zeros in those columns are treated as missing, regressed on score differential, and filled with
 draws from the fitted distribution.
 
-A prediction becomes a pick by comparing it to the Vegas spread. If the model expects a team to
-beat the spread it calls a cover, otherwise it takes the opponent. The gap between prediction and
+Each game is predicted from **both** teams' models and the two are averaged, which is measurably
+better at predicting the game itself (pooled MAE 14.06 to 13.36) though not at beating the spread.
+
+A prediction becomes a pick by comparing it to the Vegas spread, and it is reported as a game: the
+side to back and the line it has to cover, quoted the way a book does with the favourite negative
+(`Tulane +9.5 vs Duke`) rather than as "team X covers / does not cover". The stored CSVs keep the
+original columns and add `pick` and `pickSpread`. The gap between prediction and
 spread — the spread differential — is looked up in a table of historical success rates built by
 replaying the 2018–2023 seasons ten times over and binning outcomes by that gap. Picks are then
 reported in tiers: above 70%, 65–70%, 60–65%, and below 60%.

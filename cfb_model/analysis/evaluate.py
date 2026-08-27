@@ -21,6 +21,7 @@ from cfb_model.constants import (
     THRESH_GREAT,
 )
 from cfb_model.model.classify import lookup_success_rate
+from cfb_model.model.predict import resolve_pick
 
 # Chronological position of a day tag within a betting week (sun..sat).
 DAY_CHRONOLOGY = {"sun": 0, "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6}
@@ -110,8 +111,25 @@ def grade_week(
     mask = pd.Series(fbs_only, index=preds.index)
     filtered = filtered[mask.loc[filtered.index]]
 
+    # Rows stored before the pick columns existed still grade; the call is
+    # recoverable from team/oppTeam/spread/cover.
+    if "pick" not in filtered.columns or filtered["pick"].isna().any():
+        picks, lines = [], []
+        for _, r in filtered.iterrows():
+            existing = r.get("pick")
+            if isinstance(existing, str) and existing:
+                picks.append(existing)
+                lines.append(r.get("pickSpread"))
+                continue
+            pick, line = resolve_pick(r["team"], r["oppTeam"], r["spread"], r["cover"])
+            picks.append(pick)
+            lines.append(line)
+        filtered = filtered.copy()
+        filtered["pick"] = picks
+        filtered["pickSpread"] = lines
+
     columns = ["pred", "spread", "spreadDiff", "cover", "gameID", "team",
-               "oppTeam", "day", "scoreDiff", "result", "successRate"]
+               "oppTeam", "pick", "pickSpread", "day", "scoreDiff", "result", "successRate"]
     return filtered[columns].astype({"scoreDiff": float, "result": float, "successRate": float})
 
 

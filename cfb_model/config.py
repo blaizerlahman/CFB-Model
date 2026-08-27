@@ -40,6 +40,11 @@ class Settings:
     # end-of-season SP+ and run as high as 100%.
     bin_set: str = "leakfree"
 
+    # Ask both teams' models for each game and average them. Measurably better
+    # at predicting the game itself (pooled MAE 14.06 -> 13.36); against the
+    # spread the two are indistinguishable.
+    average_sides: bool = True
+
     api_base_url: str = "https://api.collegefootballdata.com"
     _api_key: str | None = field(default=None, repr=False)
 

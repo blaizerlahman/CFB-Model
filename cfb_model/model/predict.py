@@ -249,6 +249,23 @@ def games_by_id(frames: dict) -> dict:
     return games
 
 
+
+def resolve_pick(team: str, opp_team: str, spread, cover):
+    """Which side to back, and the line it must cover.
+
+    The model speaks from one team's perspective: `cover` = +1 means that team
+    beats the spread, -1 means the other side does. A game-level call names the
+    side directly. `spread` is stored score-differential style (positive = that
+    team is favoured by that much), so the returned line is negated into the
+    convention a sportsbook quotes, where the favourite is negative.
+    """
+    if pd.isna(cover) or pd.isna(spread):
+        return None, float("nan")
+    if cover >= 0:                      # a push still leaves the call on `team`
+        return team, -float(spread)
+    return opp_team, float(spread)
+
+
 def predict_week(
     model_dict: dict,
     fbs_frames: dict[str, pd.DataFrame],
@@ -309,7 +326,9 @@ def predict_week(
         spread_diff = pred - spread
         cover = (float("nan") if pd.isna(spread_diff)
                  else -1 if spread_diff < 0 else 1 if spread_diff > 0 else 0)
-        rows.append([pred, spread, spread_diff, cover, game_id, owner, opp_team])
+        pick, pick_spread = resolve_pick(owner, opp_team, spread, cover)
+        rows.append([pred, spread, spread_diff, cover, game_id, owner, opp_team,
+                     pick, pick_spread])
 
     preds = pd.DataFrame(rows, columns=list(PREDS_COLUMNS))
     return preds, statuses
@@ -414,8 +433,12 @@ def classification_report(
     fcs_frames: dict[str, pd.DataFrame],
     statuses: dict[str, str] | None = None,
 ) -> str:
-    """Port of printPredictions: exclusive tiers, sorted by success rate
-    descending, toss-ups separate, FCS games excluded."""
+    """One line per game, naming the side to back and the line it must cover.
+
+    Grouped into the same exclusive tiers as before (>70%, 65-70%, 60-65%,
+    <60%), sorted by success rate, with toss-ups separate. Games against FCS
+    opposition are left out, as they always were.
+    """
     best, great, good, normal, toss_up = [], [], [], [], []
 
     for _, p in preds.iterrows():
@@ -423,16 +446,26 @@ def classification_report(
             continue
 
         spread_diff = p["spreadDiff"]
+        if pd.isna(spread_diff):
+            continue
         cover = 1 if spread_diff > 0 else -1 if spread_diff < 0 else 0
+
+        pick = p.get("pick")
+        pick_spread = p.get("pickSpread")
+        if pick is None or (isinstance(pick, float) and pd.isna(pick)):
+            pick, pick_spread = resolve_pick(p["team"], p["oppTeam"], p["spread"], cover)
+        other = p["oppTeam"] if pick == p["team"] else p["team"]
+        # Projected margin from the backed side's point of view.
+        margin = p["pred"] if pick == p["team"] else -p["pred"]
+
         if cover == 0:
-            toss_up.append((p["team"], p["spread"], p["pred"]))
+            toss_up.append((pick, other, pick_spread, margin))
             continue
 
         rate = lookup_success_rate(spread_diff, bins)
         if rate is None:
             continue
-
-        entry = (p["team"], cover, p["pred"], rate, p["spread"])
+        entry = (pick, other, pick_spread, margin, abs(spread_diff), rate)
         if rate < 0.595:
             normal.append(entry)
         elif rate <= 0.645:
@@ -443,7 +476,7 @@ def classification_report(
             best.append(entry)
 
     for bucket in (normal, good, great, best):
-        bucket.sort(key=lambda x: x[3], reverse=True)
+        bucket.sort(key=lambda x: x[5], reverse=True)
 
     lines_out: list[str] = []
 
@@ -452,35 +485,34 @@ def classification_report(
         if not bucket:
             lines_out.append(empty_msg)
         else:
-            for team, cover, pred, rate, spread in bucket:
-                verb = "NOT COVER" if cover == -1 else "COVER"
+            for pick, other, line, margin, edge, rate in bucket:
                 lines_out.append(
-                    f"{team}: {verb} with spread {spread}. Predicted score differential: "
-                    f"{pred}. Historical success rate: {rate * 100:.2f}%."
+                    f"  {pick} {line:+g} vs {other}  |  projected {margin:+g}  |  "
+                    f"edge {edge:g}  |  {rate * 100:.2f}%"
                 )
         lines_out.append("")
 
     emit("Games with a greater than 70% success rate:", best,
-         "No games above a 70% success rate this week.")
+         "  No games above a 70% success rate this week.")
     emit("Games with a 65-70% success rate:", great,
-         "No games with a 65-70% success rate this week.")
+         "  No games with a 65-70% success rate this week.")
     emit("Games with a 60-65% success rate:", good,
-         "No games with a 60-65% success rate this week.")
+         "  No games with a 60-65% success rate this week.")
     emit("Games with a less than 60% success rate:", normal,
-         "No games below a 60% success rate this week.")
+         "  No games below a 60% success rate this week.")
 
     lines_out.append("Toss-up games:")
     if not toss_up:
-        lines_out.append("No toss-up games this week.")
+        lines_out.append("  No toss-up games this week.")
     else:
-        for team, spread, pred in toss_up:
-            lines_out.append(f"{team}: TOSS UP with spread {spread}. Predicted score differential: {pred}.")
+        for pick, other, line, margin in toss_up:
+            lines_out.append(f"  {pick} {line:+g} vs {other}  |  projected {margin:+g}  |  toss up")
 
     if statuses:
-        lines_out.append("")
-        for team, status in statuses.items():
-            if status == "No game this week":
-                continue
-            lines_out.append(f"{team}: {status}")
+        skipped = {t: st for t, st in statuses.items() if st != "No game this week"}
+        if skipped:
+            lines_out.append("")
+            for team, status in skipped.items():
+                lines_out.append(f"{team}: {status}")
 
     return "\n".join(lines_out)

@@ -44,20 +44,27 @@ def test_known_season_comes_from_store(store):
 
 
 def test_missing_season_falls_back_to_prior_year(store):
+    """A season CFBD has not published yet. 2026 was the live example until it
+    landed, so this uses a far-future year that cannot quietly start existing.
+    """
     client = FakeClient()
     warnings: list[str] = []
-    talent = resolve_talent(store, client, 2026, log=warnings.append)
+    future = 2090
+    talent = resolve_talent(store, client, future, log=warnings.append)
 
     assert not talent.empty, "fallback must supply values rather than nothing"
-    assert any("2026" in w and "talent" in w.lower() for w in warnings), \
+    assert any(str(future) in w and "talent" in w.lower() for w in warnings), \
         "the fallback must announce itself"
     # Real composites carried forward, not an all-zero placeholder.
     assert talent["Talent"].max() > 900
     assert (talent["Talent"] > 0).sum() > 100
 
-    stored_2025 = store.load_talent(2025)
-    if not stored_2025.empty:
-        pd.testing.assert_frame_equal(
-            talent.sort_values("School").reset_index(drop=True),
-            stored_2025.sort_values("School").reset_index(drop=True),
-        )
+    # It should return the most recent season actually on hand, whichever
+    # that is — the newest published season moves as time passes.
+    newest = store.conn.execute(
+        "SELECT MAX(season) FROM talent WHERE season < ?", (future,)).fetchone()[0]
+    assert newest is not None
+    pd.testing.assert_frame_equal(
+        talent.sort_values("School").reset_index(drop=True),
+        store.load_talent(int(newest)).sort_values("School").reset_index(drop=True),
+    )

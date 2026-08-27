@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS predictions (
   season INTEGER NOT NULL, week INTEGER NOT NULL, day TEXT NOT NULL,
   game_id REAL NOT NULL, team TEXT NOT NULL, opp_team TEXT,
   pred REAL, spread REAL, spread_diff REAL, cover INTEGER, success_rate REAL,
+  pick TEXT, pick_spread REAL,
   created_at TEXT DEFAULT (datetime('now')),
   PRIMARY KEY (season, week, day, game_id, team)
 );
@@ -82,6 +83,7 @@ CREATE TABLE IF NOT EXISTS results (
   team TEXT, opp_team TEXT, day TEXT,
   pred REAL, spread REAL, spread_diff REAL, cover INTEGER,
   score_diff REAL, result REAL, success_rate REAL,
+  pick TEXT, pick_spread REAL,
   PRIMARY KEY (season, week, game_id)
 );
 
@@ -112,6 +114,26 @@ class Store:
         self.conn = sqlite3.connect(str(self.db_path))
         self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.execute("PRAGMA foreign_keys=ON")
+        self._ensure_pick_columns()
+
+    def _ensure_pick_columns(self) -> None:
+        """Add the game-level pick columns to a database that predates them.
+
+        Cheap enough to run on connect, and it means an existing store — or a
+        copy taken for an experiment — self-heals rather than failing on the
+        first query that mentions them.
+        """
+        for table in ("predictions", "results"):
+            present = {r[0] for r in self.conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,))}
+            if not present:
+                continue
+            columns = {r[1] for r in self.conn.execute(f"PRAGMA table_info({table})")}
+            with self.conn:
+                if "pick" not in columns:
+                    self.conn.execute(f"ALTER TABLE {table} ADD COLUMN pick TEXT")
+                if "pick_spread" not in columns:
+                    self.conn.execute(f"ALTER TABLE {table} ADD COLUMN pick_spread REAL")
 
     def close(self) -> None:
         self.conn.close()
@@ -395,18 +417,22 @@ class Store:
                 None if pd.isna(r.spreadDiff) else float(r.spreadDiff),
                 None if pd.isna(r.cover) else int(r.cover),
                 None if not hasattr(r, "successRate") or pd.isna(r.successRate) else float(r.successRate),
+                getattr(r, "pick", None) if not pd.isna(getattr(r, "pick", None)) else None,
+                None if pd.isna(getattr(r, "pickSpread", None)) else float(getattr(r, "pickSpread")),
             ))
         with self.conn:
             self.conn.executemany(
                 "INSERT OR REPLACE INTO predictions (season, week, day, game_id, team, opp_team,"
-                " pred, spread, spread_diff, cover, success_rate) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                " pred, spread, spread_diff, cover, success_rate, pick, pick_spread)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 rows,
             )
 
     def load_predictions(self, season: int, week: int) -> pd.DataFrame:
         return pd.read_sql_query(
             "SELECT pred, spread, spread_diff AS spreadDiff, cover, game_id AS gameID,"
-            " team, opp_team AS oppTeam, day, success_rate AS successRate"
+            " team, opp_team AS oppTeam, day, success_rate AS successRate,"
+            " pick, pick_spread AS pickSpread"
             " FROM predictions WHERE season = ? AND week = ?",
             self.conn,
             params=(season, week),
@@ -432,12 +458,15 @@ class Store:
                 None if pd.isna(r.scoreDiff) else float(r.scoreDiff),
                 None if pd.isna(r.result) else float(r.result),
                 None if pd.isna(r.successRate) else float(r.successRate),
+                getattr(r, "pick", None) if not pd.isna(getattr(r, "pick", None)) else None,
+                None if pd.isna(getattr(r, "pickSpread", None)) else float(getattr(r, "pickSpread")),
             ))
         with self.conn:
             self.conn.executemany(
                 "INSERT OR REPLACE INTO results (season, week, game_id, team, opp_team, day,"
-                " pred, spread, spread_diff, cover, score_diff, result, success_rate)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                " pred, spread, spread_diff, cover, score_diff, result, success_rate,"
+                " pick, pick_spread)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 rows,
             )
 
@@ -445,7 +474,7 @@ class Store:
         sql = (
             "SELECT pred, spread, spread_diff AS spreadDiff, cover, game_id AS gameID,"
             " team, opp_team AS oppTeam, day, score_diff AS scoreDiff, result,"
-            " success_rate AS successRate, week"
+            " success_rate AS successRate, pick, pick_spread AS pickSpread, week"
             " FROM results WHERE season = ?"
         )
         params: tuple = (season,)
