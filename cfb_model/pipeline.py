@@ -362,13 +362,21 @@ def predict_run(store: Store, client: CfbdClient, year: int | None = None,
                                    average_sides=settings.average_sides)
 
     bins = store.load_bin_set(settings.bin_set)
-    log(classification_report(preds, bins, fbs, fcs, statuses))
+    report = classification_report(preds, bins, fbs, fcs, statuses)
+    log(report)
 
     if not preds.empty:
         store.upsert_predictions(year, week, day, preds)
-        from cfb_model.export import preds_csv_path, write_preds_csv
+        from cfb_model.export import (
+            preds_csv_path,
+            preds_report_path,
+            write_preds_csv,
+            write_preds_report,
+        )
 
         out = write_preds_csv(preds, preds_csv_path(settings.output_root, year, week, day))
+        txt = write_preds_report(report, preds_report_path(settings.output_root, year, week, day))
         log(f"\nSaved {len(preds)} predictions -> {out}")
+        log(f"Saved report -> {txt}")
     log(f"API calls this run: {client.calls_made}")
     return preds

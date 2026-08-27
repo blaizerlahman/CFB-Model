@@ -22,6 +22,19 @@ def results_csv_path(output_root: Path, year: int, week: int) -> Path:
     return output_root / f"{year} Season" / "Results" / f"results_{year}w{week}.csv"
 
 
+def preds_report_path(output_root: Path, year: int, week: int, day: str) -> Path:
+    """The readable report sits beside the CSV, same name, .txt."""
+    return preds_csv_path(output_root, year, week, day).with_suffix(".txt")
+
+
+def write_preds_report(report: str, path: Path) -> Path:
+    """Save the run's printed report verbatim, so the week's picks can be read
+    back without reconstructing them from the CSV."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(report.rstrip() + "\n")
+    return path
+
+
 def write_preds_csv(preds: pd.DataFrame, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     out = preds.sort_values("team").reset_index(drop=True)

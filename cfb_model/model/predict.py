@@ -301,12 +301,12 @@ def predict_week(
         row = sides[owner]
         opp_team = row["AwayTeam"] if row["HomeTeam"] == owner else row["HomeTeam"]
 
-        # Alphabetically-first modelled side owns the game, as before.
-        for other in modelled[1:]:
-            statuses[other] = f"Already predicted by {owner}"
+        # The alphabetically-first modelled side still owns the row, but with
+        # averaging both models feed the same game-level call, so there is no
+        # longer a meaningful sense in which the other team "was not predicted".
 
         if owner in skip_teams or opp_team in skip_teams:
-            statuses[owner] = "Playing team with incomplete data"
+            statuses[f"{owner} vs {opp_team}"] = "no pick — a side has incomplete data"
             continue
 
         if features is None:
@@ -439,6 +439,12 @@ def classification_report(
     <60%), sorted by success rate, with toss-ups separate. Games against FCS
     opposition are left out, as they always were.
     """
+    legend = (
+        "Each line: the side to back and its line, then the margin this model "
+        "projects for\nthat side, then how far that projection sits from the "
+        "line, then the historical\nhit rate for gaps that size. A larger gap "
+        "is a bigger disagreement with the\nmarket, not a better bet.\n"
+    )
     best, great, good, normal, toss_up = [], [], [], [], []
 
     for _, p in preds.iterrows():
@@ -478,7 +484,7 @@ def classification_report(
     for bucket in (normal, good, great, best):
         bucket.sort(key=lambda x: x[5], reverse=True)
 
-    lines_out: list[str] = []
+    lines_out: list[str] = [legend]
 
     def emit(title: str, bucket: list, empty_msg: str) -> None:
         lines_out.append(title)
@@ -487,8 +493,8 @@ def classification_report(
         else:
             for pick, other, line, margin, edge, rate in bucket:
                 lines_out.append(
-                    f"  {pick} {line:+g} vs {other}  |  projected {margin:+g}  |  "
-                    f"edge {edge:g}  |  {rate * 100:.2f}%"
+                    f"  {pick} {line:+g} vs {other}  |  model {margin:+g}  |  "
+                    f"{edge:g} vs line  |  {rate * 100:.2f}%"
                 )
         lines_out.append("")
 
@@ -509,7 +515,8 @@ def classification_report(
             lines_out.append(f"  {pick} {line:+g} vs {other}  |  projected {margin:+g}  |  toss up")
 
     if statuses:
-        skipped = {t: st for t, st in statuses.items() if st != "No game this week"}
+        skipped = {t: st for t, st in statuses.items()
+                   if st not in ("No game this week",)}
         if skipped:
             lines_out.append("")
             for team, status in skipped.items():

@@ -155,9 +155,20 @@ Each game is predicted from **both** teams' models and the two are averaged, whi
 better at predicting the game itself (pooled MAE 14.06 to 13.36) though not at beating the spread.
 
 A prediction becomes a pick by comparing it to the Vegas spread, and it is reported as a game: the
-side to back and the line it has to cover, quoted the way a book does with the favourite negative
-(`Tulane +9.5 vs Duke`) rather than as "team X covers / does not cover". The stored CSVs keep the
-original columns and add `pick` and `pickSpread`. The gap between prediction and
+side to back and the line it has to cover, quoted the way a book does with the favourite negative,
+rather than as "team X covers / does not cover".
+
+```
+Tulane +9.5 vs Duke  |  model -4.5  |  5 vs line  |  62.71%
+```
+
+Back Tulane getting 9.5; the model has Tulane losing by 4.5, which is 5 points better than the
+line needs, and gaps that size have historically hit 62.71%. Note that a bigger gap is a bigger
+disagreement with the market, not a better bet — measured over 2024-25 the largest gaps did
+worst.
+
+Each run writes the CSV and a `.txt` copy of this report beside it. The CSVs keep the original
+columns and add `pick` and `pickSpread`. The gap between prediction and
 spread — the spread differential — is looked up in a table of historical success rates built by
 replaying the 2018–2023 seasons ten times over and binning outcomes by that gap. Picks are then
 reported in tiers: above 70%, 65–70%, 60–65%, and below 60%.
