@@ -440,10 +440,9 @@ def classification_report(
     opposition are left out, as they always were.
     """
     legend = (
-        "Each line: the side to back and its line, then the margin this model "
-        "projects for\nthat side, then how far that projection sits from the "
-        "line, then the historical\nhit rate for gaps that size. A larger gap "
-        "is a bigger disagreement with the\nmarket, not a better bet.\n"
+        "Each line: the side to back and its line, the margin this model "
+        "projects for that\nside, and the historical hit rate for a "
+        "disagreement of this size.\n"
     )
     best, great, good, normal, toss_up = [], [], [], [], []
 
@@ -494,7 +493,7 @@ def classification_report(
             for pick, other, line, margin, edge, rate in bucket:
                 lines_out.append(
                     f"  {pick} {line:+g} vs {other}  |  model {margin:+g}  |  "
-                    f"{edge:g} vs line  |  {rate * 100:.2f}%"
+                    f"{rate * 100:.2f}%"
                 )
         lines_out.append("")
 

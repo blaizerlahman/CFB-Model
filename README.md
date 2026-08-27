@@ -159,13 +159,12 @@ side to back and the line it has to cover, quoted the way a book does with the f
 rather than as "team X covers / does not cover".
 
 ```
-Tulane +9.5 vs Duke  |  model -4.5  |  5 vs line  |  62.71%
+Tulane +9.5 vs Duke  |  model -4.5  |  62.71%
 ```
 
-Back Tulane getting 9.5; the model has Tulane losing by 4.5, which is 5 points better than the
-line needs, and gaps that size have historically hit 62.71%. Note that a bigger gap is a bigger
-disagreement with the market, not a better bet — measured over 2024-25 the largest gaps did
-worst.
+Back Tulane getting 9.5; the model has Tulane losing by 4.5, comfortably inside the line, and
+disagreements of that size have historically hit 62.71%. Treat that rate with care — measured
+over 2024-25 the model's largest disagreements with the market actually fared worst.
 
 Each run writes the CSV and a `.txt` copy of this report beside it. The CSVs keep the original
 columns and add `pick` and `pickSpread`. The gap between prediction and
