@@ -159,12 +159,21 @@ side to back and the line it has to cover, quoted the way a book does with the f
 rather than as "team X covers / does not cover".
 
 ```
-Tulane +9.5 vs Duke  |  model -4.5  |  62.71%
+Key:
+Model pick | Model projection | Historical hit rate for model based on predicted difference
+
+  Tulane +9.5 vs Duke  |  Tulane loses by 4.5  |  62.71%
+  Clemson +10.5 vs LSU |  Clemson wins by 2.5  |  56.18%
 ```
 
-Back Tulane getting 9.5; the model has Tulane losing by 4.5, comfortably inside the line, and
-disagreements of that size have historically hit 62.71%. Treat that rate with care — measured
-over 2024-25 the model's largest disagreements with the market actually fared worst.
+Back Tulane getting 9.5: the model expects them to lose by only 4.5, comfortably inside the line.
+The projection is always stated for the side being backed, so it reads the same way whether that
+side is winning outright or just covering.
+
+Treat the hit rate with care. It is the historical record for disagreements of that size, and it
+is noisy — the 62.71% bin holds 118 games with a 95% interval of roughly nine points, and its
+immediate neighbours all sit near 50%. Measured over 2024-25 the model's largest disagreements
+with the market fared worst, so a high number here is not a green light.
 
 Each run writes the CSV and a `.txt` copy of this report beside it. The CSVs keep the original
 columns and add `pick` and `pickSpread`. The gap between prediction and

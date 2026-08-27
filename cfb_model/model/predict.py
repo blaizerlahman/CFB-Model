@@ -440,10 +440,17 @@ def classification_report(
     opposition are left out, as they always were.
     """
     legend = (
-        "Each line: the side to back and its line, the margin this model "
-        "projects for that\nside, and the historical hit rate for a "
-        "disagreement of this size.\n"
+        "Key:\n"
+        "Model pick | Model projection | Historical hit rate for model based on "
+        "predicted difference\n"
     )
+
+    def projection(side: str, margin: float) -> str:
+        """State the result the model expects for the side being backed."""
+        if pd.isna(margin) or margin == 0:
+            return f"{side} level"
+        verb = "wins" if margin > 0 else "loses"
+        return f"{side} {verb} by {abs(margin):g}"
     best, great, good, normal, toss_up = [], [], [], [], []
 
     for _, p in preds.iterrows():
@@ -492,7 +499,7 @@ def classification_report(
         else:
             for pick, other, line, margin, edge, rate in bucket:
                 lines_out.append(
-                    f"  {pick} {line:+g} vs {other}  |  model {margin:+g}  |  "
+                    f"  {pick} {line:+g} vs {other}  |  {projection(pick, margin)}  |  "
                     f"{rate * 100:.2f}%"
                 )
         lines_out.append("")
@@ -511,7 +518,8 @@ def classification_report(
         lines_out.append("  No toss-up games this week.")
     else:
         for pick, other, line, margin in toss_up:
-            lines_out.append(f"  {pick} {line:+g} vs {other}  |  projected {margin:+g}  |  toss up")
+            lines_out.append(
+                f"  {pick} {line:+g} vs {other}  |  {projection(pick, margin)}  |  toss up")
 
     if statuses:
         skipped = {t: st for t, st in statuses.items()
