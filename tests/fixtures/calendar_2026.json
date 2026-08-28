@@ -1,0 +1,146 @@
+[
+ {
+  "season": 2026,
+  "week": 1,
+  "seasonType": "regular",
+  "startDate": "2026-08-29T07:00:00.000Z",
+  "endDate": "2026-09-08T06:59:00.000Z",
+  "firstGameStart": "2026-08-29T07:00:00.000Z",
+  "lastGameStart": "2026-09-08T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 2,
+  "seasonType": "regular",
+  "startDate": "2026-09-08T07:00:00.000Z",
+  "endDate": "2026-09-14T06:59:00.000Z",
+  "firstGameStart": "2026-09-08T07:00:00.000Z",
+  "lastGameStart": "2026-09-14T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 3,
+  "seasonType": "regular",
+  "startDate": "2026-09-14T07:00:00.000Z",
+  "endDate": "2026-09-21T06:59:00.000Z",
+  "firstGameStart": "2026-09-14T07:00:00.000Z",
+  "lastGameStart": "2026-09-21T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 4,
+  "seasonType": "regular",
+  "startDate": "2026-09-21T07:00:00.000Z",
+  "endDate": "2026-09-28T06:59:00.000Z",
+  "firstGameStart": "2026-09-21T07:00:00.000Z",
+  "lastGameStart": "2026-09-28T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 5,
+  "seasonType": "regular",
+  "startDate": "2026-09-28T07:00:00.000Z",
+  "endDate": "2026-10-05T06:59:00.000Z",
+  "firstGameStart": "2026-09-28T07:00:00.000Z",
+  "lastGameStart": "2026-10-05T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 6,
+  "seasonType": "regular",
+  "startDate": "2026-10-05T07:00:00.000Z",
+  "endDate": "2026-10-12T06:59:00.000Z",
+  "firstGameStart": "2026-10-05T07:00:00.000Z",
+  "lastGameStart": "2026-10-12T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 7,
+  "seasonType": "regular",
+  "startDate": "2026-10-12T07:00:00.000Z",
+  "endDate": "2026-10-19T06:59:00.000Z",
+  "firstGameStart": "2026-10-12T07:00:00.000Z",
+  "lastGameStart": "2026-10-19T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 8,
+  "seasonType": "regular",
+  "startDate": "2026-10-19T07:00:00.000Z",
+  "endDate": "2026-10-26T06:59:00.000Z",
+  "firstGameStart": "2026-10-19T07:00:00.000Z",
+  "lastGameStart": "2026-10-26T06:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 9,
+  "seasonType": "regular",
+  "startDate": "2026-10-26T07:00:00.000Z",
+  "endDate": "2026-11-02T07:59:00.000Z",
+  "firstGameStart": "2026-10-26T07:00:00.000Z",
+  "lastGameStart": "2026-11-02T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 10,
+  "seasonType": "regular",
+  "startDate": "2026-11-02T08:00:00.000Z",
+  "endDate": "2026-11-09T07:59:00.000Z",
+  "firstGameStart": "2026-11-02T08:00:00.000Z",
+  "lastGameStart": "2026-11-09T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 11,
+  "seasonType": "regular",
+  "startDate": "2026-11-09T08:00:00.000Z",
+  "endDate": "2026-11-16T07:59:00.000Z",
+  "firstGameStart": "2026-11-09T08:00:00.000Z",
+  "lastGameStart": "2026-11-16T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 12,
+  "seasonType": "regular",
+  "startDate": "2026-11-16T08:00:00.000Z",
+  "endDate": "2026-11-23T07:59:00.000Z",
+  "firstGameStart": "2026-11-16T08:00:00.000Z",
+  "lastGameStart": "2026-11-23T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 13,
+  "seasonType": "regular",
+  "startDate": "2026-11-23T08:00:00.000Z",
+  "endDate": "2026-11-30T07:59:00.000Z",
+  "firstGameStart": "2026-11-23T08:00:00.000Z",
+  "lastGameStart": "2026-11-30T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 14,
+  "seasonType": "regular",
+  "startDate": "2026-11-30T08:00:00.000Z",
+  "endDate": "2026-12-07T07:59:00.000Z",
+  "firstGameStart": "2026-11-30T08:00:00.000Z",
+  "lastGameStart": "2026-12-07T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 15,
+  "seasonType": "regular",
+  "startDate": "2026-12-07T08:00:00.000Z",
+  "endDate": "2026-12-12T07:59:00.000Z",
+  "firstGameStart": "2026-12-07T08:00:00.000Z",
+  "lastGameStart": "2026-12-12T07:59:00.000Z"
+ },
+ {
+  "season": 2026,
+  "week": 1,
+  "seasonType": "postseason",
+  "startDate": "2026-12-12T08:00:00.000Z",
+  "endDate": "2027-01-28T07:59:00.000Z",
+  "firstGameStart": "2026-12-12T08:00:00.000Z",
+  "lastGameStart": "2027-01-28T07:59:00.000Z"
+ }
+]

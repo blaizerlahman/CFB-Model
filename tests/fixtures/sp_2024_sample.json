@@ -1,0 +1,782 @@
+[
+  {
+    "year": 2024,
+    "team": "Ohio State",
+    "conference": "Big Ten",
+    "rating": 31.2,
+    "ranking": 1,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 3,
+      "rating": 39.5,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 1,
+      "rating": 9.2,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 0.8
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Ole Miss",
+    "conference": "SEC",
+    "rating": 27.9,
+    "ranking": 2,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 7,
+      "rating": 37.7,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 3,
+      "rating": 11.9,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 2.1
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Oregon",
+    "conference": "Big Ten",
+    "rating": 26,
+    "ranking": 3,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 2,
+      "rating": 40.8,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 14,
+      "rating": 16.3,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.5
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Alabama",
+    "conference": "SEC",
+    "rating": 25,
+    "ranking": 4,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 6,
+      "rating": 37.9,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 8,
+      "rating": 14.6,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.7
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Penn State",
+    "conference": "Big Ten",
+    "rating": 24.6,
+    "ranking": 5,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 9,
+      "rating": 37.5,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 4,
+      "rating": 13.1,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 0.2
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Georgia",
+    "conference": "SEC",
+    "rating": 24.3,
+    "ranking": 6,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 10,
+      "rating": 37.3,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 9,
+      "rating": 14.9,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.9
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Texas",
+    "conference": "SEC",
+    "rating": 24.1,
+    "ranking": 7,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 13,
+      "rating": 36.6,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 2,
+      "rating": 10.8,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": -1.7
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Notre Dame",
+    "conference": "FBS Independents",
+    "rating": 23.9,
+    "ranking": 8,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 4,
+      "rating": 38.6,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 7,
+      "rating": 14.1,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": -0.6
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Tennessee",
+    "conference": "SEC",
+    "rating": 22,
+    "ranking": 9,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 23,
+      "rating": 33.7,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 6,
+      "rating": 13.5,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.7
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Miami",
+    "conference": "ACC",
+    "rating": 21.6,
+    "ranking": 10,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 1,
+      "rating": 44.2,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 51,
+      "rating": 24.3,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.8
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Indiana",
+    "conference": "Big Ten",
+    "rating": 20.1,
+    "ranking": 11,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 18,
+      "rating": 35,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 15,
+      "rating": 16.4,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.5
+    }
+  },
+  {
+    "year": 2024,
+    "team": "SMU",
+    "conference": "ACC",
+    "rating": 17.5,
+    "ranking": 12,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 5,
+      "rating": 38.2,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 30,
+      "rating": 21.1,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 0.4
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Texas A&M",
+    "conference": "SEC",
+    "rating": 17,
+    "ranking": 13,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 21,
+      "rating": 34,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 19,
+      "rating": 18.6,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.6
+    }
+  },
+  {
+    "year": 2024,
+    "team": "South Carolina",
+    "conference": "SEC",
+    "rating": 16.9,
+    "ranking": 14,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 35,
+      "rating": 32.1,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 13,
+      "rating": 16,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 0.8
+    }
+  },
+  {
+    "year": 2024,
+    "team": "LSU",
+    "conference": "SEC",
+    "rating": 15.9,
+    "ranking": 15,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 11,
+      "rating": 36.8,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 33,
+      "rating": 21.7,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 0.8
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Iowa",
+    "conference": "Big Ten",
+    "rating": 15.8,
+    "ranking": 16,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 69,
+      "rating": 27,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 5,
+      "rating": 13.3,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 2
+    }
+  },
+  {
+    "year": 2024,
+    "team": "BYU",
+    "conference": "Big 12",
+    "rating": 15.3,
+    "ranking": 17,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 36,
+      "rating": 32,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 21,
+      "rating": 18.8,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 2
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Kansas State",
+    "conference": "Big 12",
+    "rating": 14.1,
+    "ranking": 18,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 29,
+      "rating": 33,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 25,
+      "rating": 20.4,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 1.5
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Missouri",
+    "conference": "SEC",
+    "rating": 14,
+    "ranking": 19,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 23,
+      "rating": 33.7,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 20,
+      "rating": 18.7,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": -1
+    }
+  },
+  {
+    "year": 2024,
+    "team": "Florida",
+    "conference": "SEC",
+    "rating": 13.8,
+    "ranking": 20,
+    "secondOrderWins": null,
+    "sos": null,
+    "offense": {
+      "ranking": 37,
+      "rating": 31.7,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "runRate": null,
+      "pace": null
+    },
+    "defense": {
+      "ranking": 23,
+      "rating": 20,
+      "success": null,
+      "explosiveness": null,
+      "rushing": null,
+      "passing": null,
+      "standardDowns": null,
+      "passingDowns": null,
+      "havoc": {
+        "total": null,
+        "frontSeven": null,
+        "db": null
+      }
+    },
+    "specialTeams": {
+      "rating": 2.1
+    }
+  }
+]

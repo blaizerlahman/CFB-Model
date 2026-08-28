@@ -1,0 +1,51 @@
+# Planning / Claude / temporary docs — never push
+IMPLEMENTATION_PLAN.md
+PROGRESS.md
+GOAL.md
+CLAUDE.md
+*.tmp
+
+# Secrets — never push
+.env
+cfb_api.txt
+pat.txt
+Repository/
+
+# Legacy data directories (migration sources; stay local)
+Original Data/
+Updated data/
+Recent Data/
+FCS Data/
+Bin Data/
+SP+ Data/
+Talent Data/
+Team Models/
+2024 Season/
+
+# New local stores / artifacts (root-level only)
+/data/
+/models/
+/logs/
+/output/
+
+# Loose legacy files
+download*.csv
+totalWeeklyDataTest.csv
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Jupyter / macOS
+.ipynb_checkpoints/
+.DS_Store
+.claude/
+
+# node modules from one-off script testing
+node_modules/
+package-lock.json

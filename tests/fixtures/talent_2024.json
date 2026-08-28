@@ -1,0 +1,672 @@
+[
+ {
+  "year": 2024,
+  "team": "Alabama",
+  "talent": 1018.28
+ },
+ {
+  "year": 2024,
+  "team": "Georgia",
+  "talent": 1006.89
+ },
+ {
+  "year": 2024,
+  "team": "Ohio State",
+  "talent": 998.62
+ },
+ {
+  "year": 2024,
+  "team": "Texas",
+  "talent": 953.95
+ },
+ {
+  "year": 2024,
+  "team": "Clemson",
+  "talent": 924.63
+ },
+ {
+  "year": 2024,
+  "team": "Oregon",
+  "talent": 916.71
+ },
+ {
+  "year": 2024,
+  "team": "Texas A&M",
+  "talent": 914.52
+ },
+ {
+  "year": 2024,
+  "team": "Oklahoma",
+  "talent": 906.61
+ },
+ {
+  "year": 2024,
+  "team": "LSU",
+  "talent": 906.19
+ },
+ {
+  "year": 2024,
+  "team": "Notre Dame",
+  "talent": 905.52
+ },
+ {
+  "year": 2024,
+  "team": "Penn State",
+  "talent": 895.31
+ },
+ {
+  "year": 2024,
+  "team": "Florida",
+  "talent": 894.24
+ },
+ {
+  "year": 2024,
+  "team": "Florida State",
+  "talent": 879.48
+ },
+ {
+  "year": 2024,
+  "team": "Miami",
+  "talent": 868.15
+ },
+ {
+  "year": 2024,
+  "team": "USC",
+  "talent": 863.09
+ },
+ {
+  "year": 2024,
+  "team": "Michigan",
+  "talent": 859.21
+ },
+ {
+  "year": 2024,
+  "team": "Tennessee",
+  "talent": 858.67
+ },
+ {
+  "year": 2024,
+  "team": "Auburn",
+  "talent": 833.61
+ },
+ {
+  "year": 2024,
+  "team": "Missouri",
+  "talent": 807.36
+ },
+ {
+  "year": 2024,
+  "team": "Ole Miss",
+  "talent": 801.66
+ },
+ {
+  "year": 2024,
+  "team": "South Carolina",
+  "talent": 798.18
+ },
+ {
+  "year": 2024,
+  "team": "North Carolina",
+  "talent": 794.99
+ },
+ {
+  "year": 2024,
+  "team": "Nebraska",
+  "talent": 790.42
+ },
+ {
+  "year": 2024,
+  "team": "Kentucky",
+  "talent": 788.36
+ },
+ {
+  "year": 2024,
+  "team": "SMU",
+  "talent": 788.22
+ },
+ {
+  "year": 2024,
+  "team": "Arkansas",
+  "talent": 779.17
+ },
+ {
+  "year": 2024,
+  "team": "Wisconsin",
+  "talent": 771.35
+ },
+ {
+  "year": 2024,
+  "team": "TCU",
+  "talent": 766.5
+ },
+ {
+  "year": 2024,
+  "team": "UCLA",
+  "talent": 758.87
+ },
+ {
+  "year": 2024,
+  "team": "Arizona State",
+  "talent": 757.02
+ },
+ {
+  "year": 2024,
+  "team": "Colorado",
+  "talent": 749.16
+ },
+ {
+  "year": 2024,
+  "team": "UCF",
+  "talent": 746.3
+ },
+ {
+  "year": 2024,
+  "team": "Utah",
+  "talent": 745.21
+ },
+ {
+  "year": 2024,
+  "team": "Mississippi State",
+  "talent": 743.77
+ },
+ {
+  "year": 2024,
+  "team": "Washington",
+  "talent": 741.11
+ },
+ {
+  "year": 2024,
+  "team": "Louisville",
+  "talent": 739.28
+ },
+ {
+  "year": 2024,
+  "team": "Purdue",
+  "talent": 738.93
+ },
+ {
+  "year": 2024,
+  "team": "Texas Tech",
+  "talent": 732.07
+ },
+ {
+  "year": 2024,
+  "team": "Iowa",
+  "talent": 723.51
+ },
+ {
+  "year": 2024,
+  "team": "NC State",
+  "talent": 722.41
+ },
+ {
+  "year": 2024,
+  "team": "Michigan State",
+  "talent": 721.75
+ },
+ {
+  "year": 2024,
+  "team": "Stanford",
+  "talent": 719.43
+ },
+ {
+  "year": 2024,
+  "team": "Pittsburgh",
+  "talent": 713.74
+ },
+ {
+  "year": 2024,
+  "team": "Baylor",
+  "talent": 709.46
+ },
+ {
+  "year": 2024,
+  "team": "Minnesota",
+  "talent": 705.22
+ },
+ {
+  "year": 2024,
+  "team": "Georgia Tech",
+  "talent": 703
+ },
+ {
+  "year": 2024,
+  "team": "California",
+  "talent": 702.38
+ },
+ {
+  "year": 2024,
+  "team": "Syracuse",
+  "talent": 698.59
+ },
+ {
+  "year": 2024,
+  "team": "Kansas",
+  "talent": 696.92
+ },
+ {
+  "year": 2024,
+  "team": "Vanderbilt",
+  "talent": 695.96
+ },
+ {
+  "year": 2024,
+  "team": "Maryland",
+  "talent": 695.59
+ },
+ {
+  "year": 2024,
+  "team": "Virginia Tech",
+  "talent": 695.42
+ },
+ {
+  "year": 2024,
+  "team": "Oklahoma State",
+  "talent": 687.76
+ },
+ {
+  "year": 2024,
+  "team": "West Virginia",
+  "talent": 684.9
+ },
+ {
+  "year": 2024,
+  "team": "Northwestern",
+  "talent": 675.78
+ },
+ {
+  "year": 2024,
+  "team": "Arizona",
+  "talent": 672.7
+ },
+ {
+  "year": 2024,
+  "team": "Indiana",
+  "talent": 668.92
+ },
+ {
+  "year": 2024,
+  "team": "Boston College",
+  "talent": 667.91
+ },
+ {
+  "year": 2024,
+  "team": "Rutgers",
+  "talent": 663.55
+ },
+ {
+  "year": 2024,
+  "team": "Cincinnati",
+  "talent": 662.34
+ },
+ {
+  "year": 2024,
+  "team": "Virginia",
+  "talent": 662.28
+ },
+ {
+  "year": 2024,
+  "team": "Tulane",
+  "talent": 654.07
+ },
+ {
+  "year": 2024,
+  "team": "Illinois",
+  "talent": 653.75
+ },
+ {
+  "year": 2024,
+  "team": "Kansas State",
+  "talent": 651.75
+ },
+ {
+  "year": 2024,
+  "team": "Charlotte",
+  "talent": 648.28
+ },
+ {
+  "year": 2024,
+  "team": "Houston",
+  "talent": 646.7
+ },
+ {
+  "year": 2024,
+  "team": "UTSA",
+  "talent": 644.36
+ },
+ {
+  "year": 2024,
+  "team": "Iowa State",
+  "talent": 642.12
+ },
+ {
+  "year": 2024,
+  "team": "South Florida",
+  "talent": 641.02
+ },
+ {
+  "year": 2024,
+  "team": "Duke",
+  "talent": 635.89
+ },
+ {
+  "year": 2024,
+  "team": "Wake Forest",
+  "talent": 635.45
+ },
+ {
+  "year": 2024,
+  "team": "Memphis",
+  "talent": 633.44
+ },
+ {
+  "year": 2024,
+  "team": "Oregon State",
+  "talent": 626.97
+ },
+ {
+  "year": 2024,
+  "team": "East Carolina",
+  "talent": 611.66
+ },
+ {
+  "year": 2024,
+  "team": "Washington State",
+  "talent": 610.54
+ },
+ {
+  "year": 2024,
+  "team": "San Diego State",
+  "talent": 608.95
+ },
+ {
+  "year": 2024,
+  "team": "Boise State",
+  "talent": 608.26
+ },
+ {
+  "year": 2024,
+  "team": "BYU",
+  "talent": 602.46
+ },
+ {
+  "year": 2024,
+  "team": "North Texas",
+  "talent": 595.42
+ },
+ {
+  "year": 2024,
+  "team": "Florida Atlantic",
+  "talent": 592.16
+ },
+ {
+  "year": 2024,
+  "team": "Marshall",
+  "talent": 587.22
+ },
+ {
+  "year": 2024,
+  "team": "Massachusetts",
+  "talent": 585.57
+ },
+ {
+  "year": 2024,
+  "team": "UAB",
+  "talent": 583.23
+ },
+ {
+  "year": 2024,
+  "team": "App State",
+  "talent": 575.31
+ },
+ {
+  "year": 2024,
+  "team": "UNLV",
+  "talent": 575.16
+ },
+ {
+  "year": 2024,
+  "team": "Arkansas State",
+  "talent": 573.27
+ },
+ {
+  "year": 2024,
+  "team": "Toledo",
+  "talent": 571.92
+ },
+ {
+  "year": 2024,
+  "team": "Liberty",
+  "talent": 569.65
+ },
+ {
+  "year": 2024,
+  "team": "Fresno State",
+  "talent": 568.31
+ },
+ {
+  "year": 2024,
+  "team": "Southern Miss",
+  "talent": 565.51
+ },
+ {
+  "year": 2024,
+  "team": "Georgia State",
+  "talent": 564.88
+ },
+ {
+  "year": 2024,
+  "team": "Coastal Carolina",
+  "talent": 557.61
+ },
+ {
+  "year": 2024,
+  "team": "Tulsa",
+  "talent": 556.71
+ },
+ {
+  "year": 2024,
+  "team": "South Alabama",
+  "talent": 554.77
+ },
+ {
+  "year": 2024,
+  "team": "Louisiana",
+  "talent": 553.39
+ },
+ {
+  "year": 2024,
+  "team": "Western Michigan",
+  "talent": 547.19
+ },
+ {
+  "year": 2024,
+  "team": "Colorado State",
+  "talent": 546.04
+ },
+ {
+  "year": 2024,
+  "team": "Utah State",
+  "talent": 543.56
+ },
+ {
+  "year": 2024,
+  "team": "Texas State",
+  "talent": 540.17
+ },
+ {
+  "year": 2024,
+  "team": "Rice",
+  "talent": 538.4
+ },
+ {
+  "year": 2024,
+  "team": "UConn",
+  "talent": 537.91
+ },
+ {
+  "year": 2024,
+  "team": "Akron",
+  "talent": 537.82
+ },
+ {
+  "year": 2024,
+  "team": "Louisiana Tech",
+  "talent": 533.72
+ },
+ {
+  "year": 2024,
+  "team": "Temple",
+  "talent": 532.46
+ },
+ {
+  "year": 2024,
+  "team": "Georgia Southern",
+  "talent": 527.99
+ },
+ {
+  "year": 2024,
+  "team": "Nevada",
+  "talent": 525.22
+ },
+ {
+  "year": 2024,
+  "team": "Western Kentucky",
+  "talent": 518.88
+ },
+ {
+  "year": 2024,
+  "team": "Hawai'i",
+  "talent": 513.7
+ },
+ {
+  "year": 2024,
+  "team": "Eastern Michigan",
+  "talent": 508.73
+ },
+ {
+  "year": 2024,
+  "team": "Miami (OH)",
+  "talent": 505.3
+ },
+ {
+  "year": 2024,
+  "team": "Florida International",
+  "talent": 504.39
+ },
+ {
+  "year": 2024,
+  "team": "Middle Tennessee",
+  "talent": 503.43
+ },
+ {
+  "year": 2024,
+  "team": "Troy",
+  "talent": 499.56
+ },
+ {
+  "year": 2024,
+  "team": "Sam Houston",
+  "talent": 488.03
+ },
+ {
+  "year": 2024,
+  "team": "Bowling Green",
+  "talent": 484.51
+ },
+ {
+  "year": 2024,
+  "team": "San Jos\u00e9 State",
+  "talent": 480.29
+ },
+ {
+  "year": 2024,
+  "team": "Central Michigan",
+  "talent": 467.22
+ },
+ {
+  "year": 2024,
+  "team": "New Mexico",
+  "talent": 464.59
+ },
+ {
+  "year": 2024,
+  "team": "Ball State",
+  "talent": 464.07
+ },
+ {
+  "year": 2024,
+  "team": "James Madison",
+  "talent": 459.14
+ },
+ {
+  "year": 2024,
+  "team": "UTEP",
+  "talent": 455.97
+ },
+ {
+  "year": 2024,
+  "team": "Wyoming",
+  "talent": 455.45
+ },
+ {
+  "year": 2024,
+  "team": "Ohio",
+  "talent": 450.55
+ },
+ {
+  "year": 2024,
+  "team": "Northern Illinois",
+  "talent": 437.2
+ },
+ {
+  "year": 2024,
+  "team": "Kent State",
+  "talent": 435.3
+ },
+ {
+  "year": 2024,
+  "team": "Buffalo",
+  "talent": 435.22
+ },
+ {
+  "year": 2024,
+  "team": "Jacksonville State",
+  "talent": 430.94
+ },
+ {
+  "year": 2024,
+  "team": "Old Dominion",
+  "talent": 428.91
+ },
+ {
+  "year": 2024,
+  "team": "New Mexico State",
+  "talent": 370.2
+ },
+ {
+  "year": 2024,
+  "team": "UL Monroe",
+  "talent": 329.43
+ },
+ {
+  "year": 2024,
+  "team": "Kennesaw State",
+  "talent": 288.14
+ },
+ {
+  "year": 2024,
+  "team": "Air Force",
+  "talent": 0
+ },
+ {
+  "year": 2024,
+  "team": "Army",
+  "talent": 0
+ },
+ {
+  "year": 2024,
+  "team": "Navy",
+  "talent": 0
+ }
+]

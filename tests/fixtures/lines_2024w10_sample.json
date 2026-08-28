@@ -1,0 +1,1227 @@
+[
+  {
+    "id": 401628536,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T19:30:00.000Z",
+    "homeTeamId": 130,
+    "homeTeam": "Michigan",
+    "homeConference": "Big Ten",
+    "homeClassification": "fbs",
+    "homeScore": 17,
+    "awayTeamId": 2483,
+    "awayTeam": "Oregon",
+    "awayConference": "Big Ten",
+    "awayClassification": "fbs",
+    "awayScore": 38,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 14.5,
+        "formattedSpread": "Oregon -14.5",
+        "spreadOpen": 3,
+        "overUnder": 45.5,
+        "overUnderOpen": null,
+        "homeMoneyline": 500,
+        "awayMoneyline": -810
+      },
+      {
+        "provider": "Bovada",
+        "spread": 14.5,
+        "formattedSpread": "Oregon -14.5",
+        "spreadOpen": 16,
+        "overUnder": 45,
+        "overUnderOpen": 45,
+        "homeMoneyline": 500,
+        "awayMoneyline": -750
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 14.5,
+        "formattedSpread": "Oregon -14.5",
+        "spreadOpen": 14.5,
+        "overUnder": 45.5,
+        "overUnderOpen": 44.5,
+        "homeMoneyline": 475,
+        "awayMoneyline": -750
+      }
+    ]
+  },
+  {
+    "id": 401628539,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T16:00:00.000Z",
+    "homeTeamId": 213,
+    "homeTeam": "Penn State",
+    "homeConference": "Big Ten",
+    "homeClassification": "fbs",
+    "homeScore": 13,
+    "awayTeamId": 194,
+    "awayTeam": "Ohio State",
+    "awayConference": "Big Ten",
+    "awayClassification": "fbs",
+    "awayScore": 20,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 3,
+        "formattedSpread": "Ohio State -3",
+        "spreadOpen": 4,
+        "overUnder": 47.5,
+        "overUnderOpen": null,
+        "homeMoneyline": 136,
+        "awayMoneyline": -162
+      },
+      {
+        "provider": "Bovada",
+        "spread": 3,
+        "formattedSpread": "Ohio State -3.0",
+        "spreadOpen": 4,
+        "overUnder": 47.5,
+        "overUnderOpen": 47,
+        "homeMoneyline": 160,
+        "awayMoneyline": -185
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 3.5,
+        "formattedSpread": "Ohio State -3.5",
+        "spreadOpen": 4,
+        "overUnder": 47.5,
+        "overUnderOpen": 47.5,
+        "homeMoneyline": 140,
+        "awayMoneyline": -165
+      }
+    ]
+  },
+  {
+    "id": 401628408,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T19:30:00.000Z",
+    "homeTeamId": 61,
+    "homeTeam": "Georgia",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 34,
+    "awayTeamId": 57,
+    "awayTeam": "Florida",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 20,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -14.5,
+        "formattedSpread": "Georgia -14.5",
+        "spreadOpen": -21,
+        "overUnder": 52.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -700,
+        "awayMoneyline": 500
+      },
+      {
+        "provider": "Bovada",
+        "spread": -15,
+        "formattedSpread": "Georgia -15.0",
+        "spreadOpen": -16,
+        "overUnder": 52.5,
+        "overUnderOpen": 52,
+        "homeMoneyline": -800,
+        "awayMoneyline": 525
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -14.5,
+        "formattedSpread": "Georgia -14.5",
+        "spreadOpen": -16.5,
+        "overUnder": 52.5,
+        "overUnderOpen": 52.5,
+        "homeMoneyline": -750,
+        "awayMoneyline": 475
+      }
+    ]
+  },
+  {
+    "id": 401635600,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T23:30:00.000Z",
+    "homeTeamId": 228,
+    "homeTeam": "Clemson",
+    "homeConference": "ACC",
+    "homeClassification": "fbs",
+    "homeScore": 21,
+    "awayTeamId": 97,
+    "awayTeam": "Louisville",
+    "awayConference": "ACC",
+    "awayClassification": "fbs",
+    "awayScore": 33,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -11,
+        "formattedSpread": "Clemson -11",
+        "spreadOpen": -8,
+        "overUnder": 62.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -410,
+        "awayMoneyline": 320
+      },
+      {
+        "provider": "Bovada",
+        "spread": -11,
+        "formattedSpread": "Clemson -11.0",
+        "spreadOpen": -10.5,
+        "overUnder": 62.5,
+        "overUnderOpen": 61.5,
+        "homeMoneyline": -430,
+        "awayMoneyline": 320
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -11.5,
+        "formattedSpread": "Clemson -11.5",
+        "spreadOpen": -11.5,
+        "overUnder": 62.5,
+        "overUnderOpen": 61.5,
+        "homeMoneyline": -425,
+        "awayMoneyline": 320
+      }
+    ]
+  },
+  {
+    "id": 401635604,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T16:00:00.000Z",
+    "homeTeamId": 183,
+    "homeTeam": "Syracuse",
+    "homeConference": "ACC",
+    "homeClassification": "fbs",
+    "homeScore": 38,
+    "awayTeamId": 259,
+    "awayTeam": "Virginia Tech",
+    "awayConference": "ACC",
+    "awayClassification": "fbs",
+    "awayScore": 31,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 3.5,
+        "formattedSpread": "Virginia Tech -3.5",
+        "spreadOpen": 1,
+        "overUnder": 54,
+        "overUnderOpen": null,
+        "homeMoneyline": 150,
+        "awayMoneyline": -180
+      },
+      {
+        "provider": "Bovada",
+        "spread": 3.5,
+        "formattedSpread": "Virginia Tech -3.5",
+        "spreadOpen": 4,
+        "overUnder": 53.5,
+        "overUnderOpen": 54,
+        "homeMoneyline": 160,
+        "awayMoneyline": -185
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 3.5,
+        "formattedSpread": "Virginia Tech -3.5",
+        "spreadOpen": 4,
+        "overUnder": 50.5,
+        "overUnderOpen": 53.5,
+        "homeMoneyline": 155,
+        "awayMoneyline": -185
+      }
+    ]
+  },
+  {
+    "id": 401635627,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-03T00:00:00.000Z",
+    "homeTeamId": 2567,
+    "homeTeam": "SMU",
+    "homeConference": "ACC",
+    "homeClassification": "fbs",
+    "homeScore": 48,
+    "awayTeamId": 221,
+    "awayTeam": "Pittsburgh",
+    "awayConference": "ACC",
+    "awayClassification": "fbs",
+    "awayScore": 25,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -7,
+        "formattedSpread": "SMU -7",
+        "spreadOpen": -6.5,
+        "overUnder": 55.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -278,
+        "awayMoneyline": 225
+      },
+      {
+        "provider": "Bovada",
+        "spread": -7,
+        "formattedSpread": "SMU -7.0",
+        "spreadOpen": -7.5,
+        "overUnder": 55.5,
+        "overUnderOpen": 59,
+        "homeMoneyline": -300,
+        "awayMoneyline": 250
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -7.5,
+        "formattedSpread": "SMU -7.5",
+        "spreadOpen": -7.5,
+        "overUnder": 54.5,
+        "overUnderOpen": 59.5,
+        "homeMoneyline": -280,
+        "awayMoneyline": 230
+      }
+    ]
+  },
+  {
+    "id": 401628406,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T16:00:00.000Z",
+    "homeTeamId": 8,
+    "homeTeam": "Arkansas",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 31,
+    "awayTeamId": 145,
+    "awayTeam": "Ole Miss",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 63,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 8,
+        "formattedSpread": "Ole Miss -8",
+        "spreadOpen": 9.5,
+        "overUnder": 54,
+        "overUnderOpen": null,
+        "homeMoneyline": 260,
+        "awayMoneyline": -325
+      },
+      {
+        "provider": "Bovada",
+        "spread": 8.5,
+        "formattedSpread": "Ole Miss -8.5",
+        "spreadOpen": 6.5,
+        "overUnder": 54,
+        "overUnderOpen": 55,
+        "homeMoneyline": 205,
+        "awayMoneyline": -245
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 7.5,
+        "formattedSpread": "Ole Miss -7.5",
+        "spreadOpen": 6.5,
+        "overUnder": 54.5,
+        "overUnderOpen": 55.5,
+        "homeMoneyline": 240,
+        "awayMoneyline": -290
+      }
+    ]
+  },
+  {
+    "id": 401643820,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-10-29T23:30:00.000Z",
+    "homeTeamId": 326,
+    "homeTeam": "Texas State",
+    "homeConference": "Sun Belt",
+    "homeClassification": "fbs",
+    "homeScore": 17,
+    "awayTeamId": 309,
+    "awayTeam": "Louisiana",
+    "awayConference": "Sun Belt",
+    "awayClassification": "fbs",
+    "awayScore": 23,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -4,
+        "formattedSpread": "Texas State -4",
+        "spreadOpen": -4,
+        "overUnder": 60.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -185,
+        "awayMoneyline": 154
+      },
+      {
+        "provider": "Bovada",
+        "spread": -4,
+        "formattedSpread": "Texas State -4.0",
+        "spreadOpen": -3,
+        "overUnder": 60.5,
+        "overUnderOpen": 59,
+        "homeMoneyline": -160,
+        "awayMoneyline": 135
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -3.5,
+        "formattedSpread": "Texas State -3.5",
+        "spreadOpen": -3,
+        "overUnder": 61.5,
+        "overUnderOpen": 59.5,
+        "homeMoneyline": -185,
+        "awayMoneyline": 155
+      }
+    ]
+  },
+  {
+    "id": 401628535,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T23:30:00.000Z",
+    "homeTeamId": 2294,
+    "homeTeam": "Iowa",
+    "homeConference": "Big Ten",
+    "homeClassification": "fbs",
+    "homeScore": 42,
+    "awayTeamId": 275,
+    "awayTeam": "Wisconsin",
+    "awayConference": "Big Ten",
+    "awayClassification": "fbs",
+    "awayScore": 10,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -2.5,
+        "formattedSpread": "Iowa -2.5",
+        "spreadOpen": -3,
+        "overUnder": 40,
+        "overUnderOpen": null,
+        "homeMoneyline": -135,
+        "awayMoneyline": 114
+      },
+      {
+        "provider": "Bovada",
+        "spread": -2.5,
+        "formattedSpread": "Iowa -2.5",
+        "spreadOpen": -4,
+        "overUnder": 40.5,
+        "overUnderOpen": 42.5,
+        "homeMoneyline": -185,
+        "awayMoneyline": 160
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -2.5,
+        "formattedSpread": "Iowa -2.5",
+        "spreadOpen": -3.5,
+        "overUnder": 40.5,
+        "overUnderOpen": 42.5,
+        "homeMoneyline": -140,
+        "awayMoneyline": 120
+      }
+    ]
+  },
+  {
+    "id": 401628411,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T23:30:00.000Z",
+    "homeTeamId": 2579,
+    "homeTeam": "South Carolina",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 44,
+    "awayTeamId": 245,
+    "awayTeam": "Texas A&M",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 20,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 3,
+        "formattedSpread": "Texas A&M -3",
+        "spreadOpen": 4,
+        "overUnder": 43.5,
+        "overUnderOpen": null,
+        "homeMoneyline": 130,
+        "awayMoneyline": -155
+      },
+      {
+        "provider": "Bovada",
+        "spread": 3,
+        "formattedSpread": "Texas A&M -3.0",
+        "spreadOpen": 3.5,
+        "overUnder": 43.5,
+        "overUnderOpen": 46,
+        "homeMoneyline": 145,
+        "awayMoneyline": -170
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 3.5,
+        "formattedSpread": "Texas A&M -3.5",
+        "spreadOpen": 3.5,
+        "overUnder": 43.5,
+        "overUnderOpen": 46.5,
+        "homeMoneyline": 130,
+        "awayMoneyline": -150
+      }
+    ]
+  },
+  {
+    "id": 401640985,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-10-29T23:00:00.000Z",
+    "homeTeamId": 2229,
+    "homeTeam": "Florida International",
+    "homeConference": "Conference USA",
+    "homeClassification": "fbs",
+    "homeScore": 34,
+    "awayTeamId": 166,
+    "awayTeam": "New Mexico State",
+    "awayConference": "Conference USA",
+    "awayClassification": "fbs",
+    "awayScore": 13,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -7,
+        "formattedSpread": "Florida International -7",
+        "spreadOpen": -10,
+        "overUnder": 43.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -278,
+        "awayMoneyline": 230
+      },
+      {
+        "provider": "Bovada",
+        "spread": -7,
+        "formattedSpread": "Florida International -7.0",
+        "spreadOpen": -7.5,
+        "overUnder": 43.5,
+        "overUnderOpen": 45,
+        "homeMoneyline": -360,
+        "awayMoneyline": 280
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -7.5,
+        "formattedSpread": "Florida International -7.5",
+        "spreadOpen": -7.5,
+        "overUnder": 43.5,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": -275,
+        "awayMoneyline": 225
+      }
+    ]
+  },
+  {
+    "id": 401641012,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-10-30T00:00:00.000Z",
+    "homeTeamId": 2534,
+    "homeTeam": "Sam Houston",
+    "homeConference": "Conference USA",
+    "homeClassification": "fbs",
+    "homeScore": 9,
+    "awayTeamId": 2348,
+    "awayTeam": "Louisiana Tech",
+    "awayConference": "Conference USA",
+    "awayClassification": "fbs",
+    "awayScore": 3,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -10.5,
+        "formattedSpread": "Sam Houston -10.5",
+        "spreadOpen": -9.5,
+        "overUnder": 45.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -425,
+        "awayMoneyline": 330
+      },
+      {
+        "provider": "Bovada",
+        "spread": -10.5,
+        "formattedSpread": "Sam Houston -10.5",
+        "spreadOpen": -10.5,
+        "overUnder": 45.5,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": -430,
+        "awayMoneyline": 320
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -10.5,
+        "formattedSpread": "Sam Houston -10.5",
+        "spreadOpen": -10.5,
+        "overUnder": 45.5,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": -425,
+        "awayMoneyline": 320
+      }
+    ]
+  },
+  {
+    "id": 401640994,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-10-30T23:00:00.000Z",
+    "homeTeamId": 2335,
+    "homeTeam": "Liberty",
+    "homeConference": "Conference USA",
+    "homeClassification": "fbs",
+    "homeScore": 21,
+    "awayTeamId": 55,
+    "awayTeam": "Jacksonville State",
+    "awayConference": "Conference USA",
+    "awayClassification": "fbs",
+    "awayScore": 31,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -2.5,
+        "formattedSpread": "Liberty -2.5",
+        "spreadOpen": 1,
+        "overUnder": 64,
+        "overUnderOpen": null,
+        "homeMoneyline": -135,
+        "awayMoneyline": 114
+      },
+      {
+        "provider": "Bovada",
+        "spread": -2.5,
+        "formattedSpread": "Liberty -2.5",
+        "spreadOpen": -1.5,
+        "overUnder": 64.5,
+        "overUnderOpen": 63.5,
+        "homeMoneyline": -120,
+        "awayMoneyline": 100
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -2.5,
+        "formattedSpread": "Liberty -2.5",
+        "spreadOpen": -1,
+        "overUnder": 63.5,
+        "overUnderOpen": 63.5,
+        "homeMoneyline": -135,
+        "awayMoneyline": 115
+      }
+    ]
+  },
+  {
+    "id": 401645356,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-10-31T23:30:00.000Z",
+    "homeTeamId": 2429,
+    "homeTeam": "Charlotte",
+    "homeConference": "American Athletic",
+    "homeClassification": "fbs",
+    "homeScore": 3,
+    "awayTeamId": 2655,
+    "awayTeam": "Tulane",
+    "awayConference": "American Athletic",
+    "awayClassification": "fbs",
+    "awayScore": 34,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 14.5,
+        "formattedSpread": "Tulane -14.5",
+        "spreadOpen": 15.5,
+        "overUnder": 55.5,
+        "overUnderOpen": null,
+        "homeMoneyline": 470,
+        "awayMoneyline": -650
+      },
+      {
+        "provider": "Bovada",
+        "spread": 14.5,
+        "formattedSpread": "Tulane -14.5",
+        "spreadOpen": 16,
+        "overUnder": 55,
+        "overUnderOpen": 55.5,
+        "homeMoneyline": 525,
+        "awayMoneyline": -800
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 14.5,
+        "formattedSpread": "Tulane -14.5",
+        "spreadOpen": 16.5,
+        "overUnder": 54.5,
+        "overUnderOpen": 55.5,
+        "homeMoneyline": 475,
+        "awayMoneyline": -750
+      }
+    ]
+  },
+  {
+    "id": 401641020,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-10-30T23:30:00.000Z",
+    "homeTeamId": 98,
+    "homeTeam": "Western Kentucky",
+    "homeConference": "Conference USA",
+    "homeClassification": "fbs",
+    "homeScore": 31,
+    "awayTeamId": 338,
+    "awayTeam": "Kennesaw State",
+    "awayConference": "Conference USA",
+    "awayClassification": "fbs",
+    "awayScore": 14,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -24,
+        "formattedSpread": "Western Kentucky -24",
+        "spreadOpen": -24.5,
+        "overUnder": 49,
+        "overUnderOpen": null,
+        "homeMoneyline": -2100,
+        "awayMoneyline": 1100
+      },
+      {
+        "provider": "Bovada",
+        "spread": -23.5,
+        "formattedSpread": "Western Kentucky -23.5",
+        "spreadOpen": -24,
+        "overUnder": 49,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": -2800,
+        "awayMoneyline": 1100
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -23.5,
+        "formattedSpread": "Western Kentucky -23.5",
+        "spreadOpen": -24,
+        "overUnder": 49.5,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": -3000,
+        "awayMoneyline": 1200
+      }
+    ]
+  },
+  {
+    "id": 401628540,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T23:30:00.000Z",
+    "homeTeamId": 264,
+    "homeTeam": "Washington",
+    "homeConference": "Big Ten",
+    "homeClassification": "fbs",
+    "homeScore": 26,
+    "awayTeamId": 30,
+    "awayTeam": "USC",
+    "awayConference": "Big Ten",
+    "awayClassification": "fbs",
+    "awayScore": 21,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 2,
+        "formattedSpread": "USC -2",
+        "spreadOpen": 3,
+        "overUnder": 55,
+        "overUnderOpen": null,
+        "homeMoneyline": 105,
+        "awayMoneyline": -125
+      },
+      {
+        "provider": "Bovada",
+        "spread": 2,
+        "formattedSpread": "USC -2.0",
+        "spreadOpen": 2.5,
+        "overUnder": 55,
+        "overUnderOpen": 55.5,
+        "homeMoneyline": 115,
+        "awayMoneyline": -135
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 2.5,
+        "formattedSpread": "USC -2.5",
+        "spreadOpen": 2.5,
+        "overUnder": 55.5,
+        "overUnderOpen": 55.5,
+        "homeMoneyline": 110,
+        "awayMoneyline": -130
+      }
+    ]
+  },
+  {
+    "id": 401628533,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T16:00:00.000Z",
+    "homeTeamId": 356,
+    "homeTeam": "Illinois",
+    "homeConference": "Big Ten",
+    "homeClassification": "fbs",
+    "homeScore": 17,
+    "awayTeamId": 135,
+    "awayTeam": "Minnesota",
+    "awayConference": "Big Ten",
+    "awayClassification": "fbs",
+    "awayScore": 25,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 2.5,
+        "formattedSpread": "Minnesota -2.5",
+        "spreadOpen": -2.5,
+        "overUnder": 47,
+        "overUnderOpen": null,
+        "homeMoneyline": 120,
+        "awayMoneyline": -142
+      },
+      {
+        "provider": "Bovada",
+        "spread": 3,
+        "formattedSpread": "Minnesota -3.0",
+        "spreadOpen": 2.5,
+        "overUnder": 47,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": 110,
+        "awayMoneyline": -130
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 2.5,
+        "formattedSpread": "Minnesota -2.5",
+        "spreadOpen": 2,
+        "overUnder": 47.5,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": 120,
+        "awayMoneyline": -140
+      }
+    ]
+  },
+  {
+    "id": 401635601,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T16:00:00.000Z",
+    "homeTeamId": 2390,
+    "homeTeam": "Miami",
+    "homeConference": "ACC",
+    "homeClassification": "fbs",
+    "homeScore": 53,
+    "awayTeamId": 150,
+    "awayTeam": "Duke",
+    "awayConference": "ACC",
+    "awayClassification": "fbs",
+    "awayScore": 31,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -21,
+        "formattedSpread": "Miami -21",
+        "spreadOpen": -19.5,
+        "overUnder": 55.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -1650,
+        "awayMoneyline": 950
+      },
+      {
+        "provider": "Bovada",
+        "spread": -21,
+        "formattedSpread": "Miami -21.0",
+        "spreadOpen": -20,
+        "overUnder": 56,
+        "overUnderOpen": 54.5,
+        "homeMoneyline": -1400,
+        "awayMoneyline": 750
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -19.5,
+        "formattedSpread": "Miami -19.5",
+        "spreadOpen": -20,
+        "overUnder": 53.5,
+        "overUnderOpen": 54.5,
+        "homeMoneyline": -1800,
+        "awayMoneyline": 900
+      }
+    ]
+  },
+  {
+    "id": 401628534,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T19:30:00.000Z",
+    "homeTeamId": 127,
+    "homeTeam": "Michigan State",
+    "homeConference": "Big Ten",
+    "homeClassification": "fbs",
+    "homeScore": 10,
+    "awayTeamId": 84,
+    "awayTeam": "Indiana",
+    "awayConference": "Big Ten",
+    "awayClassification": "fbs",
+    "awayScore": 47,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 7.5,
+        "formattedSpread": "Indiana -7.5",
+        "spreadOpen": 7,
+        "overUnder": 53.5,
+        "overUnderOpen": null,
+        "homeMoneyline": 245,
+        "awayMoneyline": -305
+      },
+      {
+        "provider": "Bovada",
+        "spread": 7.5,
+        "formattedSpread": "Indiana -7.5",
+        "spreadOpen": 6.5,
+        "overUnder": 53.5,
+        "overUnderOpen": 51,
+        "homeMoneyline": 215,
+        "awayMoneyline": -260
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 7.5,
+        "formattedSpread": "Indiana -7.5",
+        "spreadOpen": 7,
+        "overUnder": 53.5,
+        "overUnderOpen": 50.5,
+        "homeMoneyline": 250,
+        "awayMoneyline": -300
+      }
+    ]
+  },
+  {
+    "id": 401636914,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T19:30:00.000Z",
+    "homeTeamId": 66,
+    "homeTeam": "Iowa State",
+    "homeConference": "Big 12",
+    "homeClassification": "fbs",
+    "homeScore": 22,
+    "awayTeamId": 2641,
+    "awayTeam": "Texas Tech",
+    "awayConference": "Big 12",
+    "awayClassification": "fbs",
+    "awayScore": 23,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -13.5,
+        "formattedSpread": "Iowa State -13.5",
+        "spreadOpen": -11,
+        "overUnder": 55,
+        "overUnderOpen": null,
+        "homeMoneyline": -520,
+        "awayMoneyline": 390
+      },
+      {
+        "provider": "Bovada",
+        "spread": -13.5,
+        "formattedSpread": "Iowa State -13.5",
+        "spreadOpen": -14,
+        "overUnder": 56,
+        "overUnderOpen": 57.5,
+        "homeMoneyline": -650,
+        "awayMoneyline": 450
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -14.5,
+        "formattedSpread": "Iowa State -14.5",
+        "spreadOpen": -14.5,
+        "overUnder": 55.5,
+        "overUnderOpen": 57.5,
+        "homeMoneyline": -600,
+        "awayMoneyline": 400
+      }
+    ]
+  },
+  {
+    "id": 401628412,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T23:45:00.000Z",
+    "homeTeamId": 2633,
+    "homeTeam": "Tennessee",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 28,
+    "awayTeamId": 96,
+    "awayTeam": "Kentucky",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 18,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -17.5,
+        "formattedSpread": "Tennessee -17.5",
+        "spreadOpen": -13,
+        "overUnder": 45.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -950,
+        "awayMoneyline": 625
+      },
+      {
+        "provider": "Bovada",
+        "spread": -17.5,
+        "formattedSpread": "Tennessee -17.5",
+        "spreadOpen": -16,
+        "overUnder": 45.5,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": -800,
+        "awayMoneyline": 525
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -17.5,
+        "formattedSpread": "Tennessee -17.5",
+        "spreadOpen": -16,
+        "overUnder": 45.5,
+        "overUnderOpen": 45.5,
+        "homeMoneyline": -1000,
+        "awayMoneyline": 600
+      }
+    ]
+  },
+  {
+    "id": 401628407,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T16:45:00.000Z",
+    "homeTeamId": 2,
+    "homeTeam": "Auburn",
+    "homeConference": "SEC",
+    "homeClassification": "fbs",
+    "homeScore": 7,
+    "awayTeamId": 238,
+    "awayTeam": "Vanderbilt",
+    "awayConference": "SEC",
+    "awayClassification": "fbs",
+    "awayScore": 17,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -7.5,
+        "formattedSpread": "Auburn -7.5",
+        "spreadOpen": -5,
+        "overUnder": 48,
+        "overUnderOpen": null,
+        "homeMoneyline": -278,
+        "awayMoneyline": 225
+      },
+      {
+        "provider": "Bovada",
+        "spread": -8.5,
+        "formattedSpread": "Auburn -8.5",
+        "spreadOpen": -6,
+        "overUnder": 48,
+        "overUnderOpen": 48,
+        "homeMoneyline": -235,
+        "awayMoneyline": 195
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -7.5,
+        "formattedSpread": "Auburn -7.5",
+        "spreadOpen": -6.5,
+        "overUnder": 47.5,
+        "overUnderOpen": 48.5,
+        "homeMoneyline": -280,
+        "awayMoneyline": 230
+      }
+    ]
+  },
+  {
+    "id": 401645357,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-01T23:30:00.000Z",
+    "homeTeamId": 2226,
+    "homeTeam": "Florida Atlantic",
+    "homeConference": "American Athletic",
+    "homeClassification": "fbs",
+    "homeScore": 21,
+    "awayTeamId": 58,
+    "awayTeam": "South Florida",
+    "awayConference": "American Athletic",
+    "awayClassification": "fbs",
+    "awayScore": 44,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": 1.5,
+        "formattedSpread": "South Florida -1.5",
+        "spreadOpen": 2.5,
+        "overUnder": 48,
+        "overUnderOpen": null,
+        "homeMoneyline": 100,
+        "awayMoneyline": -120
+      },
+      {
+        "provider": "Bovada",
+        "spread": 1.5,
+        "formattedSpread": "South Florida -1.5",
+        "spreadOpen": 2,
+        "overUnder": 48,
+        "overUnderOpen": 53.5,
+        "homeMoneyline": 105,
+        "awayMoneyline": -125
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": 1.5,
+        "formattedSpread": "South Florida -1.5",
+        "spreadOpen": 2,
+        "overUnder": 47.5,
+        "overUnderOpen": 53.5,
+        "homeMoneyline": 110,
+        "awayMoneyline": -135
+      }
+    ]
+  },
+  {
+    "id": 401629036,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-01T23:00:00.000Z",
+    "homeTeamId": 41,
+    "homeTeam": "UConn",
+    "homeConference": "FBS Independents",
+    "homeClassification": "fbs",
+    "homeScore": 34,
+    "awayTeamId": 2247,
+    "awayTeam": "Georgia State",
+    "awayConference": "Sun Belt",
+    "awayClassification": "fbs",
+    "awayScore": 27,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -7,
+        "formattedSpread": "UConn -7",
+        "spreadOpen": -5.5,
+        "overUnder": 48,
+        "overUnderOpen": null,
+        "homeMoneyline": -270,
+        "awayMoneyline": 220
+      },
+      {
+        "provider": "Bovada",
+        "spread": -7,
+        "formattedSpread": "UConn -7.0",
+        "spreadOpen": -7,
+        "overUnder": 48,
+        "overUnderOpen": 48.5,
+        "homeMoneyline": -290,
+        "awayMoneyline": 240
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -7.5,
+        "formattedSpread": "UConn -7.5",
+        "spreadOpen": -7.5,
+        "overUnder": 48.5,
+        "overUnderOpen": 48.5,
+        "homeMoneyline": -275,
+        "awayMoneyline": 225
+      }
+    ]
+  },
+  {
+    "id": 401643747,
+    "season": 2024,
+    "seasonType": "regular",
+    "week": 10,
+    "startDate": "2024-11-02T00:00:00.000Z",
+    "homeTeamId": 68,
+    "homeTeam": "Boise State",
+    "homeConference": "Mountain West",
+    "homeClassification": "fbs",
+    "homeScore": 56,
+    "awayTeamId": 21,
+    "awayTeam": "San Diego State",
+    "awayConference": "Mountain West",
+    "awayClassification": "fbs",
+    "awayScore": 24,
+    "lines": [
+      {
+        "provider": "DraftKings",
+        "spread": -24.5,
+        "formattedSpread": "Boise State -24.5",
+        "spreadOpen": -22.5,
+        "overUnder": 55.5,
+        "overUnderOpen": null,
+        "homeMoneyline": -3200,
+        "awayMoneyline": 1400
+      },
+      {
+        "provider": "Bovada",
+        "spread": -24.5,
+        "formattedSpread": "Boise State -24.5",
+        "spreadOpen": -24,
+        "overUnder": 55.5,
+        "overUnderOpen": 57,
+        "homeMoneyline": -2800,
+        "awayMoneyline": 1100
+      },
+      {
+        "provider": "ESPN Bet",
+        "spread": -24.5,
+        "formattedSpread": "Boise State -24.5",
+        "spreadOpen": -23.5,
+        "overUnder": 57.5,
+        "overUnderOpen": 57.5,
+        "homeMoneyline": -3000,
+        "awayMoneyline": 1200
+      }
+    ]
+  }
+]

@@ -1,0 +1,859 @@
+[
+  {
+    "id": 401643821,
+    "teams": [
+      {
+        "teamId": 2026,
+        "team": "App State",
+        "conference": "Sun Belt",
+        "homeAway": "home",
+        "points": 28,
+        "stats": [
+          {
+            "category": "rushingTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passingTDs",
+            "stat": "4"
+          },
+          {
+            "category": "kickReturnYards",
+            "stat": "44"
+          },
+          {
+            "category": "kickReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "kickReturns",
+            "stat": "2"
+          },
+          {
+            "category": "kickingPoints",
+            "stat": "4"
+          },
+          {
+            "category": "interceptionYards",
+            "stat": "0"
+          },
+          {
+            "category": "interceptionTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passesIntercepted",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesRecovered",
+            "stat": "3"
+          },
+          {
+            "category": "totalFumbles",
+            "stat": "0"
+          },
+          {
+            "category": "tacklesForLoss",
+            "stat": "8"
+          },
+          {
+            "category": "defensiveTDs",
+            "stat": "0"
+          },
+          {
+            "category": "tackles",
+            "stat": "32"
+          },
+          {
+            "category": "sacks",
+            "stat": "5"
+          },
+          {
+            "category": "qbHurries",
+            "stat": "4"
+          },
+          {
+            "category": "passesDeflected",
+            "stat": "4"
+          },
+          {
+            "category": "possessionTime",
+            "stat": "28:14"
+          },
+          {
+            "category": "interceptions",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesLost",
+            "stat": "0"
+          },
+          {
+            "category": "turnovers",
+            "stat": "1"
+          },
+          {
+            "category": "totalPenaltiesYards",
+            "stat": "5-40"
+          },
+          {
+            "category": "yardsPerRushAttempt",
+            "stat": "5.8"
+          },
+          {
+            "category": "rushingAttempts",
+            "stat": "33"
+          },
+          {
+            "category": "rushingYards",
+            "stat": "190"
+          },
+          {
+            "category": "yardsPerPass",
+            "stat": "8.8"
+          },
+          {
+            "category": "completionAttempts",
+            "stat": "13-24"
+          },
+          {
+            "category": "netPassingYards",
+            "stat": "212"
+          },
+          {
+            "category": "totalYards",
+            "stat": "402"
+          },
+          {
+            "category": "fourthDownEff",
+            "stat": "0-1"
+          },
+          {
+            "category": "thirdDownEff",
+            "stat": "7-11"
+          },
+          {
+            "category": "firstDowns",
+            "stat": "20"
+          }
+        ]
+      },
+      {
+        "teamId": 295,
+        "team": "Old Dominion",
+        "conference": "Sun Belt",
+        "homeAway": "away",
+        "points": 20,
+        "stats": [
+          {
+            "category": "rushingTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passingTDs",
+            "stat": "2"
+          },
+          {
+            "category": "kickingPoints",
+            "stat": "8"
+          },
+          {
+            "category": "interceptionYards",
+            "stat": "0"
+          },
+          {
+            "category": "interceptionTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passesIntercepted",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesRecovered",
+            "stat": "0"
+          },
+          {
+            "category": "totalFumbles",
+            "stat": "3"
+          },
+          {
+            "category": "tacklesForLoss",
+            "stat": "3"
+          },
+          {
+            "category": "defensiveTDs",
+            "stat": "0"
+          },
+          {
+            "category": "tackles",
+            "stat": "19"
+          },
+          {
+            "category": "sacks",
+            "stat": "0"
+          },
+          {
+            "category": "qbHurries",
+            "stat": "5"
+          },
+          {
+            "category": "passesDeflected",
+            "stat": "3"
+          },
+          {
+            "category": "possessionTime",
+            "stat": "31:46"
+          },
+          {
+            "category": "interceptions",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesLost",
+            "stat": "3"
+          },
+          {
+            "category": "turnovers",
+            "stat": "4"
+          },
+          {
+            "category": "totalPenaltiesYards",
+            "stat": "3-15"
+          },
+          {
+            "category": "yardsPerRushAttempt",
+            "stat": "4.6"
+          },
+          {
+            "category": "rushingAttempts",
+            "stat": "36"
+          },
+          {
+            "category": "rushingYards",
+            "stat": "166"
+          },
+          {
+            "category": "yardsPerPass",
+            "stat": "8.7"
+          },
+          {
+            "category": "completionAttempts",
+            "stat": "27-38"
+          },
+          {
+            "category": "netPassingYards",
+            "stat": "332"
+          },
+          {
+            "category": "totalYards",
+            "stat": "498"
+          },
+          {
+            "category": "fourthDownEff",
+            "stat": "0-2"
+          },
+          {
+            "category": "thirdDownEff",
+            "stat": "7-13"
+          },
+          {
+            "category": "firstDowns",
+            "stat": "26"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 401628539,
+    "teams": [
+      {
+        "teamId": 213,
+        "team": "Penn State",
+        "conference": "Big Ten",
+        "homeAway": "home",
+        "points": 13,
+        "stats": [
+          {
+            "category": "fumblesRecovered",
+            "stat": "1"
+          },
+          {
+            "category": "rushingTDs",
+            "stat": "0"
+          },
+          {
+            "category": "puntReturnYards",
+            "stat": "21"
+          },
+          {
+            "category": "puntReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "puntReturns",
+            "stat": "2"
+          },
+          {
+            "category": "passingTDs",
+            "stat": "0"
+          },
+          {
+            "category": "kickReturnYards",
+            "stat": "66"
+          },
+          {
+            "category": "kickReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "kickReturns",
+            "stat": "3"
+          },
+          {
+            "category": "kickingPoints",
+            "stat": "7"
+          },
+          {
+            "category": "interceptionYards",
+            "stat": "31"
+          },
+          {
+            "category": "interceptionTDs",
+            "stat": "1"
+          },
+          {
+            "category": "passesIntercepted",
+            "stat": "1"
+          },
+          {
+            "category": "tacklesForLoss",
+            "stat": "6"
+          },
+          {
+            "category": "defensiveTDs",
+            "stat": "1"
+          },
+          {
+            "category": "tackles",
+            "stat": "36"
+          },
+          {
+            "category": "sacks",
+            "stat": "3"
+          },
+          {
+            "category": "qbHurries",
+            "stat": "0"
+          },
+          {
+            "category": "passesDeflected",
+            "stat": "3"
+          },
+          {
+            "category": "possessionTime",
+            "stat": "28:31"
+          },
+          {
+            "category": "interceptions",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesLost",
+            "stat": "0"
+          },
+          {
+            "category": "turnovers",
+            "stat": "1"
+          },
+          {
+            "category": "totalPenaltiesYards",
+            "stat": "5-45"
+          },
+          {
+            "category": "yardsPerRushAttempt",
+            "stat": "3.8"
+          },
+          {
+            "category": "rushingAttempts",
+            "stat": "32"
+          },
+          {
+            "category": "rushingYards",
+            "stat": "120"
+          },
+          {
+            "category": "yardsPerPass",
+            "stat": "7.1"
+          },
+          {
+            "category": "completionAttempts",
+            "stat": "13-21"
+          },
+          {
+            "category": "netPassingYards",
+            "stat": "150"
+          },
+          {
+            "category": "totalYards",
+            "stat": "270"
+          },
+          {
+            "category": "fourthDownEff",
+            "stat": "1-2"
+          },
+          {
+            "category": "thirdDownEff",
+            "stat": "3-11"
+          },
+          {
+            "category": "firstDowns",
+            "stat": "15"
+          }
+        ]
+      },
+      {
+        "teamId": 194,
+        "team": "Ohio State",
+        "conference": "Big Ten",
+        "homeAway": "away",
+        "points": 20,
+        "stats": [
+          {
+            "category": "rushingTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passingTDs",
+            "stat": "2"
+          },
+          {
+            "category": "kickReturnYards",
+            "stat": "16"
+          },
+          {
+            "category": "kickReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "kickReturns",
+            "stat": "1"
+          },
+          {
+            "category": "kickingPoints",
+            "stat": "8"
+          },
+          {
+            "category": "interceptionYards",
+            "stat": "0"
+          },
+          {
+            "category": "interceptionTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passesIntercepted",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesRecovered",
+            "stat": "0"
+          },
+          {
+            "category": "totalFumbles",
+            "stat": "1"
+          },
+          {
+            "category": "tacklesForLoss",
+            "stat": "3"
+          },
+          {
+            "category": "defensiveTDs",
+            "stat": "0"
+          },
+          {
+            "category": "tackles",
+            "stat": "28"
+          },
+          {
+            "category": "sacks",
+            "stat": "2"
+          },
+          {
+            "category": "qbHurries",
+            "stat": "0"
+          },
+          {
+            "category": "passesDeflected",
+            "stat": "3"
+          },
+          {
+            "category": "possessionTime",
+            "stat": "31:29"
+          },
+          {
+            "category": "interceptions",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesLost",
+            "stat": "1"
+          },
+          {
+            "category": "turnovers",
+            "stat": "2"
+          },
+          {
+            "category": "totalPenaltiesYards",
+            "stat": "2-15"
+          },
+          {
+            "category": "yardsPerRushAttempt",
+            "stat": "4.7"
+          },
+          {
+            "category": "rushingAttempts",
+            "stat": "38"
+          },
+          {
+            "category": "rushingYards",
+            "stat": "179"
+          },
+          {
+            "category": "yardsPerPass",
+            "stat": "7.6"
+          },
+          {
+            "category": "completionAttempts",
+            "stat": "16-24"
+          },
+          {
+            "category": "netPassingYards",
+            "stat": "182"
+          },
+          {
+            "category": "totalYards",
+            "stat": "361"
+          },
+          {
+            "category": "fourthDownEff",
+            "stat": "1-1"
+          },
+          {
+            "category": "thirdDownEff",
+            "stat": "6-13"
+          },
+          {
+            "category": "firstDowns",
+            "stat": "21"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 401628408,
+    "teams": [
+      {
+        "teamId": 61,
+        "team": "Georgia",
+        "conference": "SEC",
+        "homeAway": "home",
+        "points": 34,
+        "stats": [
+          {
+            "category": "rushingTDs",
+            "stat": "2"
+          },
+          {
+            "category": "puntReturnYards",
+            "stat": "21"
+          },
+          {
+            "category": "puntReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "puntReturns",
+            "stat": "3"
+          },
+          {
+            "category": "passingTDs",
+            "stat": "2"
+          },
+          {
+            "category": "kickReturnYards",
+            "stat": "4"
+          },
+          {
+            "category": "kickReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "kickReturns",
+            "stat": "1"
+          },
+          {
+            "category": "kickingPoints",
+            "stat": "10"
+          },
+          {
+            "category": "interceptionYards",
+            "stat": "8"
+          },
+          {
+            "category": "interceptionTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passesIntercepted",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesRecovered",
+            "stat": "1"
+          },
+          {
+            "category": "totalFumbles",
+            "stat": "0"
+          },
+          {
+            "category": "tacklesForLoss",
+            "stat": "6"
+          },
+          {
+            "category": "defensiveTDs",
+            "stat": "0"
+          },
+          {
+            "category": "tackles",
+            "stat": "26"
+          },
+          {
+            "category": "sacks",
+            "stat": "2"
+          },
+          {
+            "category": "qbHurries",
+            "stat": "7"
+          },
+          {
+            "category": "passesDeflected",
+            "stat": "3"
+          },
+          {
+            "category": "possessionTime",
+            "stat": "33:35"
+          },
+          {
+            "category": "interceptions",
+            "stat": "3"
+          },
+          {
+            "category": "fumblesLost",
+            "stat": "0"
+          },
+          {
+            "category": "turnovers",
+            "stat": "3"
+          },
+          {
+            "category": "totalPenaltiesYards",
+            "stat": "5-48"
+          },
+          {
+            "category": "yardsPerRushAttempt",
+            "stat": "4.6"
+          },
+          {
+            "category": "rushingAttempts",
+            "stat": "32"
+          },
+          {
+            "category": "rushingYards",
+            "stat": "148"
+          },
+          {
+            "category": "yardsPerPass",
+            "stat": "7.7"
+          },
+          {
+            "category": "completionAttempts",
+            "stat": "25-40"
+          },
+          {
+            "category": "netPassingYards",
+            "stat": "309"
+          },
+          {
+            "category": "totalYards",
+            "stat": "457"
+          },
+          {
+            "category": "fourthDownEff",
+            "stat": "0-0"
+          },
+          {
+            "category": "thirdDownEff",
+            "stat": "4-11"
+          },
+          {
+            "category": "firstDowns",
+            "stat": "25"
+          }
+        ]
+      },
+      {
+        "teamId": 57,
+        "team": "Florida",
+        "conference": "SEC",
+        "homeAway": "away",
+        "points": 20,
+        "stats": [
+          {
+            "category": "rushingTDs",
+            "stat": "1"
+          },
+          {
+            "category": "puntReturnYards",
+            "stat": "-1"
+          },
+          {
+            "category": "puntReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "puntReturns",
+            "stat": "1"
+          },
+          {
+            "category": "passingTDs",
+            "stat": "1"
+          },
+          {
+            "category": "kickReturnYards",
+            "stat": "34"
+          },
+          {
+            "category": "kickReturnTDs",
+            "stat": "0"
+          },
+          {
+            "category": "kickReturns",
+            "stat": "2"
+          },
+          {
+            "category": "kickingPoints",
+            "stat": "8"
+          },
+          {
+            "category": "interceptionYards",
+            "stat": "62"
+          },
+          {
+            "category": "interceptionTDs",
+            "stat": "0"
+          },
+          {
+            "category": "passesIntercepted",
+            "stat": "3"
+          },
+          {
+            "category": "fumblesRecovered",
+            "stat": "0"
+          },
+          {
+            "category": "totalFumbles",
+            "stat": "1"
+          },
+          {
+            "category": "tacklesForLoss",
+            "stat": "4"
+          },
+          {
+            "category": "defensiveTDs",
+            "stat": "0"
+          },
+          {
+            "category": "tackles",
+            "stat": "32"
+          },
+          {
+            "category": "sacks",
+            "stat": "2"
+          },
+          {
+            "category": "qbHurries",
+            "stat": "4"
+          },
+          {
+            "category": "passesDeflected",
+            "stat": "3"
+          },
+          {
+            "category": "possessionTime",
+            "stat": "26:25"
+          },
+          {
+            "category": "interceptions",
+            "stat": "1"
+          },
+          {
+            "category": "fumblesLost",
+            "stat": "0"
+          },
+          {
+            "category": "turnovers",
+            "stat": "1"
+          },
+          {
+            "category": "totalPenaltiesYards",
+            "stat": "5-42"
+          },
+          {
+            "category": "yardsPerRushAttempt",
+            "stat": "3.9"
+          },
+          {
+            "category": "rushingAttempts",
+            "stat": "37"
+          },
+          {
+            "category": "rushingYards",
+            "stat": "146"
+          },
+          {
+            "category": "yardsPerPass",
+            "stat": "4.0"
+          },
+          {
+            "category": "completionAttempts",
+            "stat": "9-28"
+          },
+          {
+            "category": "netPassingYards",
+            "stat": "113"
+          },
+          {
+            "category": "totalYards",
+            "stat": "259"
+          },
+          {
+            "category": "fourthDownEff",
+            "stat": "2-4"
+          },
+          {
+            "category": "thirdDownEff",
+            "stat": "3-16"
+          },
+          {
+            "category": "firstDowns",
+            "stat": "13"
+          }
+        ]
+      }
+    ]
+  }
+]
