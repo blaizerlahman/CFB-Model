@@ -448,7 +448,7 @@ def classification_report(
     def projection(side: str, margin: float) -> str:
         """State the result the model expects for the side being backed."""
         if pd.isna(margin) or margin == 0:
-            return f"{side} level"
+            return f"{side} ties, predicts a score differential of 0"
         verb = "wins" if margin > 0 else "loses"
         return f"{side} {verb} by {abs(margin):g}"
     best, great, good, normal, toss_up = [], [], [], [], []
