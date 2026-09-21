@@ -1,12 +1,9 @@
 name: Weekly model update + precompute
 
-# Runs the pipeline on GitHub's runners (free compute), keeps the models + DB in
-# a PRIVATE state repo (never in this public repo), and publishes only the small
-# public JSON the website serves. See docs/STATIC_SITE_SETUP.md for one-time setup.
 
 on:
   schedule:
-    - cron: '0 9 * * 1' # Mondays 09:00 UTC (~Sunday night US). Adjust as desired.
+    - cron: '0 9 * * 1' # Mondays 09:00 UTC (~Sunday night US). 
   workflow_dispatch: {} # allow manual runs from the Actions tab
 
 concurrency:
@@ -16,12 +13,12 @@ concurrency:
 jobs:
   precompute:
     runs-on: ubuntu-latest
-    timeout-minutes: 180 # precompute is the long step; ample headroom over the parallel ~20 min
+    timeout-minutes: 180 
     env:
       CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
-      GH_TOKEN: ${{ secrets.GH_PAT }} # fine-grained PAT: contents RW on STATE_REPO and SITE_REPO
-      STATE_REPO: blaizerlahman/cfb-model-state # PRIVATE repo holding state.tar.gz (db + models)
-      SITE_REPO: blaizerlahman/personal-site # public site repo that serves the JSON
+      GH_TOKEN: ${{ secrets.GH_PAT }} 
+      STATE_REPO: blaizerlahman/cfb-model-state 
+      SITE_REPO: blaizerlahman/personal-site 
     steps:
       - name: Checkout model code
         uses: actions/checkout@v4
@@ -47,10 +44,8 @@ jobs:
           python -m cfb_model analyze --last-week    # grade last week -> results table
 
       - name: Precompute static JSON
-        # Serial is reliable everywhere (~60-70 min, well under the job timeout).
-        # To cut it to ~15-20 min on the Linux runner you can switch to parallel:
-        #   run: python scripts/precompute_static.py --out output/static --jobs "$(nproc)"
-        run: python scripts/precompute_static.py --out output/static
+        run: python scripts/precompute_static.py --out output/static --jobs "$(nproc)"
+        #run: python scripts/precompute_static.py --out output/static
 
       - name: Save updated state back to the private store
         run: |
