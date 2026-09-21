@@ -4,7 +4,7 @@ Because a matchup is deterministic given the current models + DB, every pairing
 can be computed up front (~131 teams -> ~8,500 pairs, ~1-2 MB). The website then
 serves these files directly with no live model host.
 
-Run (in the weekly GitHub Action, after `update`/`analyze`):
+Run (in the weekly job, after `update`/`analyze`):
 
     python scripts/precompute_static.py --out output/static
 
@@ -18,7 +18,6 @@ import glob
 import itertools
 import json
 import multiprocessing
-import os
 import re
 import sys
 import time
@@ -34,6 +33,15 @@ from cfb_model.config import get_settings
 from cfb_model.data.store import Store
 from cfb_model.model.predict import predict_matchup
 from cfb_model.pipeline import load_models
+
+
+def latest_model_season(settings) -> int:
+    seasons = [
+        int(m.group(1))
+        for p in glob.glob(str(settings.models_dir / "*_model_*.pkl"))
+        if (m := re.search(r"_model_(\d{4})\.pkl$", p))
+    ]
+    return max(seasons) if seasons else 2024
 
 
 def _entry_from_result(r: dict) -> dict:
@@ -76,15 +84,6 @@ def _predict_pair(pair: tuple[str, str]):
     return a, b, _entry_from_result(r), None
 
 
-def latest_model_season(settings) -> int:
-    seasons = [
-        int(m.group(1))
-        for p in glob.glob(str(settings.models_dir / "*_model_*.pkl"))
-        if (m := re.search(r"_model_(\d{4})\.pkl$", p))
-    ]
-    return max(seasons) if seasons else 2024
-
-
 def build_matchups(store, models: dict, log=print, max_pairs: int | None = None,
                    jobs: int = 1) -> tuple[dict, int]:
     teams = sorted(models.keys())
@@ -115,8 +114,6 @@ def build_matchups(store, models: dict, log=print, max_pairs: int | None = None,
     else:
         global _PARENT_MODELS
         _PARENT_MODELS = models  # inherited by forked workers (copy-on-write)
-        # fork avoids re-importing pandas/sklearn and reloading models per worker
-        # (the default on Linux CI; requested explicitly so macOS behaves too).
         try:
             ctx = multiprocessing.get_context("fork")
         except ValueError:  # platform without fork -> fall back to default
@@ -183,7 +180,6 @@ def main(argv: list[str] | None = None) -> int:
     t0 = time.time()
     matchups, skipped = build_matchups(store, models, max_pairs=args.max_pairs, jobs=args.jobs)
     print(f"  {len(matchups)} matchups ({skipped} skipped) in {time.time() - t0:.0f}s")
-    # compact: this file is the largest, keep it small
     (out_dir / "matchups.json").write_text(json.dumps(
         {"season": season, "generated_at": generated_at, "matchups": matchups},
         separators=(",", ":")))

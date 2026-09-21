@@ -1,11 +1,4 @@
-"""Prediction core — pure functions, no CLI/IO coupling (a future FastAPI
-service imports these directly).
-
-Ports of MidSeason's getPreferredLine / grabUpcomingWeekData (sentinel-row
-construction, minus Selenium) / predictUpcomingWeek / savePredictions /
-printPredictions. Every modeling semantic is preserved; the deliberate
-deviations (approved bug fixes) are marked LEGACY-FIX comments.
-"""
+"""Prediction core"""
 
 from __future__ import annotations
 
@@ -53,10 +46,6 @@ def build_upcoming_frames(
 
     fcs_away_opponents: set[str] = set()
 
-    # --- collect the upcoming rows for each team ---
-    # A team can have more than one: CFBD's week 1 covers roughly ten days, so
-    # a side opening in week 0 and again the next weekend has both games filed
-    # under week 1.
     pending: dict[str, list[pd.DataFrame]] = {}
     for _, row in preferred_lines.iterrows():
         row_df = pd.DataFrame([row])
@@ -65,8 +54,6 @@ def build_upcoming_frames(
             if name in fbs:
                 pass
             elif name in fcs:
-                # LEGACY-FIX (bug 3): away-FCS frames were stored into
-                # teamDict; here every FCS frame stays in the FCS dict.
                 if not is_home:
                     fcs_away_opponents.add(name)
             else:
@@ -82,9 +69,6 @@ def build_upcoming_frames(
     rolling_cols = own_rolling_columns(sample)
 
     # --- append each upcoming row with its own rolling sums ---
-    # Each is computed against the played games alone, so a second upcoming row
-    # sees the same trailing window as the first rather than counting the
-    # other one as a game.
     for frames in (fbs, fcs):
         for team, sentinels in pending.items():
             if team not in frames:
@@ -98,10 +82,6 @@ def build_upcoming_frames(
             frames[team] = pd.concat([played, *filled], ignore_index=True)
 
     # --- _opp rolling + own talent/SP, for every upcoming row ---
-    # Verbatim control flow, applied per row: the fills are staged and only
-    # committed once the talent AND SP lookups succeed. When either comes up
-    # empty the notebook discarded its working copy, losing the _opp fill too,
-    # and that shows up in predictions, so it is preserved.
     for team in list(fbs):
         df = fbs[team].copy()
         changed = False
@@ -131,10 +111,10 @@ def build_upcoming_frames(
 
             team_talent = talent.loc[talent["School"] == team, "Talent"]
             if len(team_talent.values) == 0:
-                continue  # verbatim: the row's staged fills are discarded
+                continue  
             team_sp = sp.loc[sp["Team"] == team, "Rating"]
             if len(team_sp.values) == 0:
-                continue  # verbatim: discarded
+                continue 
 
             staged["talent"] = team_talent.values[0]
             staged["SP"] = team_sp.values[0]
@@ -161,11 +141,6 @@ def build_upcoming_frames(
                     continue
 
                 if opp_name in fbs or opp_name in fcs_away_opponents:
-                    # FBS opponents always; FCS opponents only when they are the
-                    # away team — replicating the notebook, where the away-FCS
-                    # frame sat in teamDict and took the numeric-Year branch
-                    # while home-FCS frames hit a str(year) comparison that
-                    # never matched (talent_opp stayed NaN for those).
                     filtered = opp_df[opp_df["Year"] == year]
                     if filtered.empty:
                         continue
@@ -261,7 +236,7 @@ def resolve_pick(team: str, opp_team: str, spread, cover):
     """
     if pd.isna(cover) or pd.isna(spread):
         return None, float("nan")
-    if cover >= 0:                      # a push still leaves the call on `team`
+    if cover >= 0:                     
         return team, -float(spread)
     return opp_team, float(spread)
 
@@ -301,10 +276,6 @@ def predict_week(
         row = sides[owner]
         opp_team = row["AwayTeam"] if row["HomeTeam"] == owner else row["HomeTeam"]
 
-        # The alphabetically-first modelled side still owns the row, but with
-        # averaging both models feed the same game-level call, so there is no
-        # longer a meaningful sense in which the other team "was not predicted".
-
         if owner in skip_teams or opp_team in skip_teams:
             statuses[f"{owner} vs {opp_team}"] = "no pick — a side has incomplete data"
             continue
@@ -320,7 +291,7 @@ def predict_week(
             pred = round(sum(values) / len(values) * 2) / 2
         else:
             pred = model_dict[owner].predict(row[features].to_frame().T)
-            pred = round(pred[0] * 2) / 2  # builtin round, verbatim
+            pred = round(pred[0] * 2) / 2 
 
         spread = row["Spread"]
         spread_diff = pred - spread
@@ -342,15 +313,9 @@ def predict_matchup(
     spread: float | None = None,
     year: int | None = None,
     week: int | None = None,
+    log_query: bool = True,
 ) -> dict:
     """On-demand prediction for an arbitrary pairing, from current DB state.
-
-    Uses the production semantics: the alphabetically-earlier team's model
-    owns the game (falling back to the other model if the owner has none).
-    `spread` is from team1's perspective (negative = team1 favored); without
-    it only the predicted score differential is returned. Logged to
-    matchup_queries only — NEVER to the predictions table, and success
-    analyses never see these.
     """
     import numpy as np
 
@@ -375,8 +340,6 @@ def predict_matchup(
     sp = store.load_sp(year, sp_weeks[-1]) if sp_weeks else None
     talent = store.load_talent(year)
 
-    # Synthetic line row: team1 as home. Raw (home-perspective) spread is the
-    # team1-perspective value; the standard build flips it for the home team.
     from cfb_model.api.mapping import BETTING_COLUMNS
 
     row = {c: np.nan for c in BETTING_COLUMNS}
@@ -397,7 +360,8 @@ def predict_matchup(
     )
 
     features = feature_columns(fbs[owner])
-    preds, _ = predict_week({owner: models[owner]}, fbs, features)
+    model_dict = {t: models[t] for t in (owner, other) if t in models}
+    preds, _ = predict_week(model_dict, fbs, features, average_sides=True)
     if preds.empty:
         raise RuntimeError("Matchup prediction produced no output")
     p = preds.iloc[0]
@@ -413,16 +377,19 @@ def predict_matchup(
     if result["spread_diff"] is not None:
         bins = store.load_bins()
         rate = lookup_success_rate(result["spread_diff"], bins)
+        if rate is not None and pd.isna(rate):
+            rate = None  
         result["success_rate"] = rate
         result["tier"] = tier(rate) if rate is not None else None
 
-    with store.conn:
-        store.conn.execute(
-            "INSERT INTO matchup_queries (team1, team2, spread, pred, spread_diff, success_rate)"
-            " VALUES (?,?,?,?,?,?)",
-            (team1, team2, spread, result["predicted_score_diff"],
-             result["spread_diff"], result.get("success_rate")),
-        )
+    if log_query:
+        with store.conn:
+            store.conn.execute(
+                "INSERT INTO matchup_queries (team1, team2, spread, pred, spread_diff, success_rate)"
+                " VALUES (?,?,?,?,?,?)",
+                (team1, team2, spread, result["predicted_score_diff"],
+                 result["spread_diff"], result.get("success_rate")),
+            )
     return result
 
 

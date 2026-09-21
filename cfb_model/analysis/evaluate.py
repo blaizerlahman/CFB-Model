@@ -23,7 +23,6 @@ from cfb_model.constants import (
 from cfb_model.model.classify import lookup_success_rate
 from cfb_model.model.predict import resolve_pick
 
-# Chronological position of a day tag within a betting week (sun..sat).
 DAY_CHRONOLOGY = {"sun": 0, "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6}
 
 
@@ -51,6 +50,30 @@ def tier_breakdown(df: pd.DataFrame, label_best_empty: str = "No best bets this 
     else:
         lines.append(label_best_empty)
     return "\n".join(lines)
+
+
+def tier_records(df: pd.DataFrame) -> dict:
+    """Structured overall + cumulative good/great/best records (for the API).
+
+    Mirrors :func:`tier_breakdown`'s segments but returns numbers instead of a
+    printed string. ``win_rate`` excludes pushes (true ATS rate); counts are the
+    raw W / L / push tallies. Cumulative tiers use the same ``>= threshold``
+    filter on ``successRate`` as the report.
+    """
+    def rec(sub: pd.DataFrame) -> dict:
+        wins = int((sub["result"] == 1).sum())
+        losses = int((sub["result"] == -1).sum())
+        pushes = int((sub["result"] == 0).sum())
+        decisions = wins + losses
+        return {
+            "wins": wins, "losses": losses, "pushes": pushes, "n": int(len(sub)),
+            "win_rate": (wins / decisions) if decisions else None,
+        }
+
+    records = {"overall": rec(df)}
+    for name, thresh in (("good", THRESH_GOOD), ("great", THRESH_GREAT), ("best", THRESH_BEST)):
+        records[name] = rec(df[df["successRate"] >= thresh])
+    return records
 
 
 def grade_week(
@@ -111,8 +134,7 @@ def grade_week(
     mask = pd.Series(fbs_only, index=preds.index)
     filtered = filtered[mask.loc[filtered.index]]
 
-    # Rows stored before the pick columns existed still grade; the call is
-    # recoverable from team/oppTeam/spread/cover.
+    # Rows stored before the pick columns existed still are graded
     if "pick" not in filtered.columns or filtered["pick"].isna().any():
         picks, lines = [], []
         for _, r in filtered.iterrows():

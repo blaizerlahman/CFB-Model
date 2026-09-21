@@ -114,15 +114,27 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     store = Store(settings.db_path)
 
     if getattr(args, "last_week", False) and args.week is None:
-        from cfb_model.api.client import CfbdClient
-        from cfb_model.api.mapping import current_week
+        # Grade the most recent week that has BOTH stored predictions AND played
+        # games (games are only ingested after they finish). This is robust to
+        # calendar timing — unlike keying off current_week(), which returns the
+        # UPCOMING week (the one `predict` just made picks for, not yet played).
+        year = args.year
+        if year is None:
+            row = store.conn.execute("SELECT MAX(season) FROM predictions").fetchone()
+            if not row or row[0] is None:
+                print("No predictions stored yet.")
+                return 0
+            year = int(row[0])
 
-        client = CfbdClient(settings)
-        detected = current_week(client.calendar(args.year or __import__("datetime").datetime.now().year))
-        if detected is None:
-            print("Off-season: nothing to grade.")
+        played_row = store.conn.execute(
+            'SELECT MAX("Week") FROM team_games WHERE "Year" = ?', (year,)
+        ).fetchone()
+        max_played = int(played_row[0]) if played_row and played_row[0] is not None else 0
+        gradable = [w for w in store.prediction_weeks(year) if w <= max_played]
+        if not gradable:
+            print("No completed week with predictions to grade yet.")
             return 0
-        args.year, args.week = detected
+        args.year, args.week = year, max(gradable)
         print(f"Grading the week just finished: {args.year} week {args.week}")
 
     year = args.year
