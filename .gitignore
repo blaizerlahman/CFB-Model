@@ -5,6 +5,11 @@ GOAL.md
 CLAUDE.md
 *.tmp
 
+# Internal reports — keep local, never push to the public repo
+SECURITY-AUDIT-model-service.md
+edgedesk-endpoint-report.md
+.Rhistory
+
 # Secrets — never push
 .env
 cfb_api.txt
